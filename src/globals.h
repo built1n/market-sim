@@ -21,9 +21,8 @@ struct money_t {
 struct stock_t {
     char *symbol;
     char *fullname;
-    struct money_t bought_for;
     ulong count;
-    struct money_t price;
+    struct money_t current_price;
 };
 
 struct player_t {
