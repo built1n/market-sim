@@ -16,6 +16,16 @@ struct data_buffer_t {
     uint back;
 };
 
+void all_upper(char *str)
+{
+    while(*++str = toupper(*str));
+}
+
+void all_lower(char *str)
+{
+    while(*++str = tolower(*str));
+}
+
 size_t curl_callback(char *ptr, size_t size, size_t nmemb, void *userdata)
 {
     struct data_buffer_t *buf = userdata;
@@ -101,6 +111,7 @@ void buy_handler(struct player_t *player)
     char sym[16];
     printf("Enter the ticker symbol of the stock you wish to purchase: ");
     scanf("%15s", sym);
+    all_upper(sym);
     struct money_t price;
     printf("Getting stock information...\n");
     char *name;
@@ -109,11 +120,56 @@ void buy_handler(struct player_t *player)
         printf("Failed to get query information for '%s'\n", sym);
     }
     printf("Stock name: %s\n", name);
-    printf("Price per share: $%d.%d\n", price.cents / 100, price.cents % 100);
+    printf("Price per share: $%d.%02d\n", price.cents / 100, price.cents % 100);
+    printf("Enter the number of shares to be purchased (maximum %u): ", player->cash.cents / price.cents);
+    ullong count = 0;
+    scanf("%llu", &count);
+    ullong cost = price.cents * count;
+
+    if(cost > player->cash.cents)
+    {
+        printf("Not enough money!\n");
+        return;
+    }
+
+    printf("This will cost $%d.%02d. Are you sure? ", cost / 100, cost % 100);
+    char response[16];
+    scanf("%15s", response);
+    if(response[0] == 'Y' || response[0] == 'y')
+    {
+        printf("Confirmed.\n");
+        player->portfolio_len += 1;
+        player->portfolio = realloc(player->portfolio, player->portfolio_len);
+
+        player->portfolio[player->portfolio_len - 1].symbol = strdup(sym);
+        player->portfolio[player->portfolio_len - 1].fullname = strdup(name);
+        player->portfolio[player->portfolio_len - 1].count = count;
+        player->portfolio[player->portfolio_len - 1].current_price.cents = price.cents;
+
+        player->cash.cents -= cost;
+    }
+    else
+    {
+        printf("Not confirmed.\n");
+    }
 }
 
 void sell_handler(struct player_t *player)
 {
+}
+
+void save_handler(struct player_t *player)
+{
+}
+
+void update_handler(struct player_t *player)
+{
+    printf("Updating stock prices...\n");
+    for(int i = 0; i < player->portfolio_len; ++i)
+    {
+        struct stock_t *stock = player->portfolio + i;
+        get_stock_info(stock->symbol, &stock->current_price, &stock->fullname);
+    }
 }
 
 void quit_handler(struct player_t *player)
@@ -130,6 +186,10 @@ int main(int argc, char *argv[])
     struct player_t *player = malloc(sizeof(struct player_t));
     memset(player, 0, sizeof(struct player_t));
 
+    player->cash.cents = 1000000 * 100;
+
+    update_handler(player);
+
     while(1)
     {
         printf("Your portfolio:\n");
@@ -137,11 +197,14 @@ int main(int argc, char *argv[])
         for(int i = 0; i < player->portfolio_len; ++i)
         {
             struct stock_t *stock = player->portfolio + i;
-            printf("%5s %20s $%d.%d\n", stock->symbol, stock->fullname, stock->price.cents / 100, stock->price.cents % 100);
+            ullong total_value = stock->count * stock->current_price.cents;
+            printf("%5s %30s %5d * $%d.%02d = $%d.%d\n",
+                   stock->symbol, stock->fullname, stock->count, stock->current_price.cents / 100, stock->current_price.cents % 100,
+                  total_value / 100, total_value % 100);
         }
         printf("===============\n");
 
-        printf("Current cash: $%d.%d\n", player->cash.cents / 100, player->cash.cents % 100);
+        printf("Current cash: $%d.%02d\n", player->cash.cents / 100, player->cash.cents % 100);
 
         struct command_t {
             const char *name;
@@ -152,7 +215,9 @@ int main(int argc, char *argv[])
         const struct command_t commands[] = {
             { "[B]uy", "buy", buy_handler },
             { "[S]ell", "sell", sell_handler },
-            { "[Q]uit", "quit", quit_handler }
+            { "[W]rite portfolio", "write", save_handler },
+            { "[U]pdate stock prices", "update", update_handler },
+            { "[Q]uit", "quit", quit_handler },
         };
 
         for(uint i = 0; i < ARRAYLEN(commands); ++i)
@@ -163,6 +228,8 @@ int main(int argc, char *argv[])
         printf("What would you like to do? ");
         char cmdbuf[32];
         scanf("%31s", cmdbuf);
+
+        all_lower(cmdbuf);
 
         /* find the best command */
 
