@@ -2,9 +2,12 @@
 
 #include <curl/curl.h>
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+/*** utility functions ***/
 
 void cleanup(void)
 {
@@ -18,15 +21,23 @@ struct data_buffer_t {
 
 void all_upper(char *str)
 {
-    while(*++str = toupper(*str));
+    while(*str)
+    {
+        *str = toupper(*str);
+        ++str;
+    }
 }
 
 void all_lower(char *str)
 {
-    while(*++str = tolower(*str));
+    while(*str)
+    {
+        *str = tolower(*str);
+        ++str;
+    }
 }
 
-size_t curl_callback(char *ptr, size_t size, size_t nmemb, void *userdata)
+size_t download_callback(char *ptr, size_t size, size_t nmemb, void *userdata)
 {
     struct data_buffer_t *buf = userdata;
 
@@ -36,7 +47,7 @@ size_t curl_callback(char *ptr, size_t size, size_t nmemb, void *userdata)
 
     buf->back += size * nmemb;
 
-    return CURLE_OK;
+    return size * nmemb;
 }
 
 bool get_stock_info(char *symbol, struct money_t *price, char **name_ret)
@@ -55,15 +66,28 @@ bool get_stock_info(char *symbol, struct money_t *price, char **name_ret)
     struct data_buffer_t buf;
     memset(&buf, 0, sizeof(buf));
 
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, download_callback);
+
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buf);
 
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_callback);
-
     CURLcode res = curl_easy_perform(curl);
+
+    curl_easy_cleanup(curl);
 
     /** now parse the data **/
 
     /* the stock name is in quotes, find it! */
+
+    /* check for validity */
+    if(buf.back == 0 || buf.data[0] != '"' || res != CURLE_OK)
+    {
+        printf("Failed to retrieve stock data.\n");
+        if(res != CURLE_OK)
+        {
+            printf("Download library error (%d): '%s'\n", res, curl_easy_strerror(res));
+        }
+        return false;
+    }
 
     uint name_len = 0;
     for(uint i = 1; i < buf.back; ++i)
@@ -106,47 +130,96 @@ bool get_stock_info(char *symbol, struct money_t *price, char **name_ret)
     return true;
 }
 
+int compare_stocks(const void *a, const void *b)
+{
+    const struct stock_t *a1 = a, *b1 = b;
+    return strcmp(a1->symbol,
+                  b1->symbol);
+}
+
+ullong to_be64(ullong n)
+{
+    n = (n & 0x00000000FFFFFFFF) << 32 | (n & 0xFFFFFFFF00000000) >> 32;
+    n = (n & 0x0000FFFF0000FFFF) << 16 | (n & 0xFFFF0000FFFF0000) >> 16;
+    n = (n & 0x00FF00FF00FF00FF) << 8  | (n & 0xFF00FF00FF00FF00) >> 8;
+    return n;
+}
+
+/*** driver functions ***/
+
 void buy_handler(struct player_t *player)
 {
-    char sym[16];
+    char *sym = malloc(16);
     printf("Enter the ticker symbol of the stock you wish to purchase: ");
     scanf("%15s", sym);
     all_upper(sym);
+
     struct money_t price;
+
     printf("Getting stock information...\n");
+
     char *name;
+
     if(!get_stock_info(sym, &price, &name))
     {
-        printf("Failed to get query information for '%s'\n", sym);
+        printf("Failed to get query information for '%s'.\n", sym);
+        return;
     }
+
     printf("Stock name: %s\n", name);
     printf("Price per share: $%d.%02d\n", price.cents / 100, price.cents % 100);
     printf("Enter the number of shares to be purchased (maximum %u): ", player->cash.cents / price.cents);
+
     ullong count = 0;
+
     scanf("%llu", &count);
+
     ullong cost = price.cents * count;
 
     if(cost > player->cash.cents)
     {
-        printf("Not enough money!\n");
+        printf("You don't have enough money!\n");
         return;
     }
 
     printf("This will cost $%d.%02d. Are you sure? ", cost / 100, cost % 100);
     char response[16];
     scanf("%15s", response);
-    if(response[0] == 'Y' || response[0] == 'y')
+    all_lower(response);
+
+    if(response[0] == 'y')
     {
         printf("Confirmed.\n");
-        player->portfolio_len += 1;
-        player->portfolio = realloc(player->portfolio, player->portfolio_len);
 
-        player->portfolio[player->portfolio_len - 1].symbol = strdup(sym);
-        player->portfolio[player->portfolio_len - 1].fullname = strdup(name);
+        /* add the stock to the portfolio or increase the count of a stock */
+
+        for(uint i = 0; i < player->portfolio_len; ++i)
+        {
+            if(strcmp(player->portfolio[i].symbol, sym) == 0)
+            {
+                struct stock_t *stock = player->portfolio + i;
+                stock->count += count;
+                stock->current_price.cents = price.cents;
+                goto done;
+            }
+        }
+
+        /* not found, add a new one */
+        player->portfolio_len += 1;
+        player->portfolio = realloc(player->portfolio, player->portfolio_len * sizeof(struct stock_t));
+
+        printf("sym: %s\n", sym);
+        printf("name: %s\n", name);
+        player->portfolio[player->portfolio_len - 1].symbol = sym;
+        player->portfolio[player->portfolio_len - 1].fullname = name;
         player->portfolio[player->portfolio_len - 1].count = count;
         player->portfolio[player->portfolio_len - 1].current_price.cents = price.cents;
+    done:
 
         player->cash.cents -= cost;
+
+        /* sort the portfolio alphabetically by ticker symbol */
+        qsort(player->portfolio, player->portfolio_len, sizeof(struct stock_t), compare_stocks);
     }
     else
     {
@@ -160,6 +233,33 @@ void sell_handler(struct player_t *player)
 
 void save_handler(struct player_t *player)
 {
+    printf("Enter the file to save your portfolio in: ");
+
+    char buf[128];
+    scanf("%127s", buf);
+
+    printf("Writing data...\n");
+    FILE *f = fopen(buf, "w");
+
+    const char *magic = "PORTv1";
+    fwrite(magic, strlen(magic), 1, f);
+
+    ullong be_cash = to_be64(player->cash.cents);
+
+    fwrite(&be_cash, sizeof(be_cash), 1, f);
+
+    for(uint i = 0; i < player->portfolio_len; ++i)
+    {
+        struct stock_t *stock = player->portfolio + i;
+        fwrite(stock->symbol, strlen(stock->symbol) + 1, 1, f);
+        fwrite(stock->fullname, strlen(stock->fullname) + 1, 1, f);
+        ullong be_count = to_be64(stock->count);
+        fwrite(&be_count, sizeof(be_count), 1, f);
+    }
+
+    fclose(f);
+
+    printf("Done saving.");
 }
 
 void update_handler(struct player_t *player)
@@ -170,6 +270,16 @@ void update_handler(struct player_t *player)
         struct stock_t *stock = player->portfolio + i;
         get_stock_info(stock->symbol, &stock->current_price, &stock->fullname);
     }
+}
+
+void load_handler(struct player_t *player)
+{
+    printf("Enter the file to load portfolio from: ");
+    char buf[128];
+    scanf("%127s", buf);
+
+    printf("Loading portfolio...\n");
+
 }
 
 void quit_handler(struct player_t *player)
@@ -192,19 +302,36 @@ int main(int argc, char *argv[])
 
     while(1)
     {
-        printf("Your portfolio:\n");
-        printf("===============\n");
-        for(int i = 0; i < player->portfolio_len; ++i)
+        printf("\nYour portfolio:\n");
+        printf("================================================================================");
+
+        ullong portfolio_value = 0;
+
+        if(player->portfolio_len == 0)
         {
-            struct stock_t *stock = player->portfolio + i;
-            ullong total_value = stock->count * stock->current_price.cents;
-            printf("%5s %30s %5d * $%d.%02d = $%d.%d\n",
-                   stock->symbol, stock->fullname, stock->count, stock->current_price.cents / 100, stock->current_price.cents % 100,
-                  total_value / 100, total_value % 100);
+            printf(" < EMPTY >\n");
         }
-        printf("===============\n");
+        else
+        {
+            for(int i = 0; i < player->portfolio_len; ++i)
+            {
+                struct stock_t *stock = player->portfolio + i;
+                ullong total_value = stock->count * stock->current_price.cents;
+                printf("%5s %30s %5d * $%5d.%02d = $%6d.%02d\n",
+                       stock->symbol, stock->fullname, stock->count, stock->current_price.cents / 100, stock->current_price.cents % 100,
+                       total_value / 100, total_value % 100);
+
+                portfolio_value += stock->current_price.cents * stock->count;
+            }
+        }
+        printf("================================================================================\n");
+
+        printf("Portfolio value: $%d.%02d\n", portfolio_value / 100, portfolio_value % 100);
 
         printf("Current cash: $%d.%02d\n", player->cash.cents / 100, player->cash.cents % 100);
+
+        ullong total = portfolio_value + player->cash.cents;
+        printf("Total capital: $%d.%02d\n", total / 100, total % 100);
 
         struct command_t {
             const char *name;
@@ -215,8 +342,9 @@ int main(int argc, char *argv[])
         const struct command_t commands[] = {
             { "[B]uy", "buy", buy_handler },
             { "[S]ell", "sell", sell_handler },
+            { "[U]pdate stock prices", "update", update_handler },d
             { "[W]rite portfolio", "write", save_handler },
-            { "[U]pdate stock prices", "update", update_handler },
+            { "[L]oad portfolio", "load", load_handler },
             { "[Q]uit", "quit", quit_handler },
         };
 
@@ -230,7 +358,6 @@ int main(int argc, char *argv[])
         scanf("%31s", cmdbuf);
 
         all_lower(cmdbuf);
-
         /* find the best command */
 
         int best_command = -1;

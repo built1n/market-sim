@@ -1,19 +1,15 @@
 #include <stdbool.h>
+#include <stdint.h>
 
 #define ARRAYLEN(x) (sizeof(x) / sizeof(x[0]))
 
-typedef unsigned long long ullong;
-typedef unsigned long ulong;
-typedef unsigned uint;
-typedef unsigned short ushort;
-typedef unsigned char uchar;
+typedef uint64_t ullong;
+typedef uint32_t ulong;
+typedef uint32_t uint;
+typedef uint16_t ushort;
+typedef uint8_t uchar;
 
-struct date_t {
-    ushort year;
-    ushort day; /* 0 = 1st jan, 364 = 31st dec */
-};
-
-/* money is represented internally as dollars + cents */
+/* money is represented internally as cents */
 struct money_t {
     ullong cents;
 };
@@ -27,6 +23,6 @@ struct stock_t {
 
 struct player_t {
     struct money_t cash;
-    struct stock_t *portfolio;
     uint portfolio_len;
+    struct stock_t *portfolio;
 };
