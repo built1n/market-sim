@@ -7,6 +7,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*** prototypes ***/
+
+void buy_handler(struct player_t*);
+void sell_handler(struct player_t*);
+void update_handler(struct player_t*);
+void save_handler(struct player_t*);
+void load_handler(struct player_t*);
+void quit_handler(struct player_t*);
+
 /*** utility functions ***/
 
 void cleanup(void)
@@ -139,8 +148,28 @@ int compare_stocks(const void *a, const void *b)
 
 static enum { OTHER = 0, LITTLE = 1, BIG = 2 } endianness;
 
+static void detect_endianness(void)
+{
+    ulong test = 0x12345678;
+    uchar *ptr = (uchar*)&test;
+    if(*ptr == 0x12)
+        endianness = BIG;
+    else if(*ptr == 0x78)
+        endianness = LITTLE;
+    else
+    {
+        printf("FATAL: failed to detect system endianness!\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
 ullong to_be64(ullong n)
 {
+    if(!endianness)
+    {
+        detect_endianness();
+    }
+
     if(BIG)
     {
         n = (n & 0x00000000FFFFFFFF) << 32 | (n & 0xFFFFFFFF00000000) >> 32;
@@ -152,20 +181,9 @@ ullong to_be64(ullong n)
 
 ullong to_sys64(ullong n)
 {
-
     if(!endianness)
     {
-        ulong test = 0x12345678;
-        uchar *ptr = &test;
-        if(*ptr == 0x12)
-            endianness = BIG;
-        else if(*ptr == 0x78)
-            endianness = LITTLE;
-        else
-        {
-            printf("FATAL: failed to detect system endianness!\n");
-            exit(EXIT_FAILURE);
-        }
+        detect_endianness();
     }
 
     if(endianness == BIG)
@@ -203,11 +221,17 @@ void buy_handler(struct player_t *player)
 
     scanf("%llu", &count);
 
+    if(count <= 0)
+    {
+        printf("Purchase cancelled.\n");
+        return;
+    }
+
     ullong cost = price.cents * count;
 
     if(cost > player->cash.cents)
     {
-        printf("You don't have enough money!\n");
+        printf("Not enough money!\n");
         return;
     }
 
@@ -259,6 +283,79 @@ void buy_handler(struct player_t *player)
 
 void sell_handler(struct player_t *player)
 {
+    char *sym = malloc(16);
+    printf("Enter the ticker symbol of the stock you wish to sell: ");
+    scanf("%15s", sym);
+    all_upper(sym);
+
+    printf("Getting stock information...\n");
+
+    struct stock_t *stock = NULL;
+    uint stock_idx;
+
+    for(stock_idx = 0; stock_idx < player->portfolio_len; ++stock_idx)
+    {
+        if(strcmp(player->portfolio[stock_idx].symbol, sym) == 0)
+        {
+            stock = player->portfolio + stock_idx;
+            break;
+        }
+    }
+
+    if(!stock)
+    {
+        printf("Couldn't find '%s' in portfolio.\n", sym);
+        return;
+    }
+
+    update_handler(player);
+
+    printf("You currently own %d shares of '%s' (%s) valued at $%d.%02d each.\n", stock->count, stock->fullname, stock->symbol, stock->current_price.cents / 100, stock->current_price.cents % 100);
+
+    ullong sell = 0;
+    printf("How many shares do you wish to sell? ");
+    scanf("%llu", &sell);
+
+    if(!sell)
+    {
+        printf("Sale cancelled.\n");
+        return;
+    }
+
+    if(stock->count < sell)
+    {
+        printf("You don't own enough shares!\n");
+        return;
+    }
+
+    ullong sell_total = stock->current_price.cents * sell;
+
+    printf("This will sell %d shares for $%d.%02d total. Proceed? ", sell, sell_total / 100, sell_total % 100);
+
+    char response[16];
+    scanf("%15s", response);
+    all_lower(response);
+
+    if(response[0] == 'y')
+    {
+        stock->count -= sell;
+
+        if(stock->count == 0)
+        {
+            /* remove this item from the portfolio */
+            memmove(player->portfolio + stock_idx, player->portfolio + stock_idx + 1, sizeof(struct stock_t) * (player->portfolio_len - stock_idx - 1));
+            player->portfolio_len -= 1;
+            player->portfolio = realloc(player->portfolio, sizeof(struct stock_t) * player->portfolio_len);
+        }
+
+        player->cash.cents += sell_total;
+
+        printf("%d shares sold for $%d.%02d total.\n", sell, sell_total / 100, sell_total % 100);
+    }
+    else
+    {
+        printf("Not confirmed.\n");
+    }
 }
 
 void save_handler(struct player_t *player)
@@ -414,7 +511,7 @@ int main(int argc, char *argv[])
             {
                 struct stock_t *stock = player->portfolio + i;
                 ullong total_value = stock->count * stock->current_price.cents;
-                printf("%5s %30s %5d * $%5d.%02d = $%6d.%02d\n",
+                printf("%6s %30s %5d * $%5d.%02d = $%6d.%02d\n",
                        stock->symbol, stock->fullname, stock->count, stock->current_price.cents / 100, stock->current_price.cents % 100,
                        total_value / 100, total_value % 100);
 
