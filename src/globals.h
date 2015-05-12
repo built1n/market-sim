@@ -25,4 +25,5 @@ struct player_t {
     struct money_t cash;
     uint portfolio_len;
     struct stock_t *portfolio;
+    bool need_to_free_portfolio;
 };
