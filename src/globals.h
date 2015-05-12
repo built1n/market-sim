@@ -1,5 +1,9 @@
+#include <ctype.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define ARRAYLEN(x) (sizeof(x) / sizeof(x[0]))
 
@@ -27,3 +31,19 @@ struct player_t {
     struct stock_t *portfolio;
     bool need_to_free_portfolio;
 };
+
+/*** prototypes ***/
+void cleanup(void);
+int compare_stocks(const void*, const void*);
+void all_lower(char*);
+void all_upper(char*);
+bool get_stock_info(char *sym, struct money_t*, char **name);
+uint64_t to_sys64(uint64_t);
+uint64_t to_be64(uint64_t);
+
+void buy_handler(struct player_t*);
+void sell_handler(struct player_t*);
+void update_handler(struct player_t*);
+void save_handler(struct player_t*);
+void load_handler(struct player_t*);
+void quit_handler(struct player_t*);
