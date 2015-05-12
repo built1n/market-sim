@@ -163,7 +163,7 @@ static void detect_endianness(void)
     }
 }
 
-ullong to_be64(ullong n)
+uint64_t to_be64(ullong n)
 {
     if(!endianness)
     {
@@ -179,7 +179,7 @@ ullong to_be64(ullong n)
     return n;
 }
 
-ullong to_sys64(ullong n)
+uint64_t to_sys64(ullong n)
 {
     if(!endianness)
     {
@@ -214,8 +214,8 @@ void buy_handler(struct player_t *player)
     }
 
     printf("Stock name: %s\n", name);
-    printf("Price per share: $%d.%02d\n", price.cents / 100, price.cents % 100);
-    printf("Enter the number of shares to be purchased (maximum %u): ", player->cash.cents / price.cents);
+    printf("Price per share: $%llu.%02llu\n", price.cents / 100, price.cents % 100);
+    printf("Enter the number of shares to be purchased (maximum %llu): ", player->cash.cents / price.cents);
 
     ullong count = 0;
 
@@ -235,7 +235,7 @@ void buy_handler(struct player_t *player)
         return;
     }
 
-    printf("This will cost $%d.%02d. Are you sure? ", cost / 100, cost % 100);
+    printf("This will cost $%llu.%02llu. Are you sure? ", cost / 100, cost % 100);
     char response[16];
     scanf("%15s", response);
     all_lower(response);
@@ -310,7 +310,8 @@ void sell_handler(struct player_t *player)
 
     update_handler(player);
 
-    printf("You currently own %d shares of '%s' (%s) valued at $%d.%02d each.\n", stock->count, stock->fullname, stock->symbol, stock->current_price.cents / 100, stock->current_price.cents % 100);
+    printf("You currently own %llu shares of '%s' (%s) valued at $%llu.%02llu each.\n",
+           stock->count, stock->fullname, stock->symbol, stock->current_price.cents / 100, stock->current_price.cents % 100);
 
     ullong sell = 0;
     printf("How many shares do you wish to sell? ");
@@ -330,7 +331,7 @@ void sell_handler(struct player_t *player)
 
     ullong sell_total = stock->current_price.cents * sell;
 
-    printf("This will sell %d shares for $%d.%02d total. Proceed? ", sell, sell_total / 100, sell_total % 100);
+    printf("This will sell %llu shares for $%llu.%02llu total. Proceed? ", sell, sell_total / 100, sell_total % 100);
 
     char response[16];
     scanf("%15s", response);
@@ -350,13 +351,15 @@ void sell_handler(struct player_t *player)
 
         player->cash.cents += sell_total;
 
-        printf("%d shares sold for $%d.%02d total.\n", sell, sell_total / 100, sell_total % 100);
+        printf("%llu shares sold for $%llu.%02llu total.\n", sell, sell_total / 100, sell_total % 100);
     }
     else
     {
         printf("Not confirmed.\n");
     }
 }
+
+/* NOTE: integers are represented internally by unsigned long long ints, but in the save they are always 64 bits */
 
 void save_handler(struct player_t *player)
 {
@@ -511,7 +514,7 @@ int main(int argc, char *argv[])
             {
                 struct stock_t *stock = player->portfolio + i;
                 ullong total_value = stock->count * stock->current_price.cents;
-                printf("%6s %30s %5d * $%5d.%02d = $%6d.%02d\n",
+                printf("%6s %30s %5llu  * $%5llu.%02llu = $%6llu.%02llu\n",
                        stock->symbol, stock->fullname, stock->count, stock->current_price.cents / 100, stock->current_price.cents % 100,
                        total_value / 100, total_value % 100);
 
@@ -520,12 +523,12 @@ int main(int argc, char *argv[])
         }
         printf("================================================================================\n");
 
-        printf("Portfolio value: $%d.%02d\n", portfolio_value / 100, portfolio_value % 100);
+        printf("Portfolio value: $%llu.%02llu\n", portfolio_value / 100, portfolio_value % 100);
 
-        printf("Current cash: $%d.%02d\n", player->cash.cents / 100, player->cash.cents % 100);
+        printf("Current cash: $%llu.%02llu\n", player->cash.cents / 100, player->cash.cents % 100);
 
         ullong total = portfolio_value + player->cash.cents;
-        printf("Total capital: $%d.%02d\n", total / 100, total % 100);
+        printf("Total capital: $%llu.%02llu\n", total / 100, total % 100);
 
         struct command_t {
             const char *name;
