@@ -3,11 +3,11 @@
 
 #define ARRAYLEN(x) (sizeof(x) / sizeof(x[0]))
 
-typedef uint64_t ullong;
-typedef uint32_t ulong;
-typedef uint32_t uint;
-typedef uint16_t ushort;
-typedef uint8_t uchar;
+typedef unsigned long long ullong;
+typedef unsigned long ulong;
+typedef unsigned int uint;
+typedef unsigned short ushort;
+typedef unsigned char uchar;
 
 /* money is represented internally as cents */
 struct money_t {
@@ -17,7 +17,7 @@ struct money_t {
 struct stock_t {
     char *symbol;
     char *fullname;
-    ulong count;
+    ullong count;
     struct money_t current_price;
 };
 
