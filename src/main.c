@@ -286,10 +286,6 @@ void save_handler(struct player_t *player)
         fwrite(&be_symlen, sizeof(be_symlen), 1, f);
         fwrite(stock->symbol, strlen(stock->symbol) + 1, 1, f);
 
-        ullong be_namelen = to_be64(strlen(stock->fullname));
-        fwrite(&be_namelen, sizeof(be_namelen), 1, f);
-        fwrite(stock->fullname, strlen(stock->fullname) + 1, 1, f);
-
         ullong be_count = to_be64(stock->count);
         fwrite(&be_count, sizeof(be_count), 1, f);
     }
@@ -305,6 +301,7 @@ void update_handler(struct player_t *player)
     for(int i = 0; i < player->portfolio_len; ++i)
     {
         struct stock_t *stock = player->portfolio + i;
+        printf("%s...\n", stock->symbol);
         get_stock_info(stock->symbol, &stock->current_price, &stock->fullname);
     }
 }
@@ -340,8 +337,6 @@ void load_handler(struct player_t *player)
 
     player->cash.cents = cash;
 
-    printf("cash: %d\n", cash);
-
     fflush(stdout);
     do {
         /* read portfolio data */
@@ -365,22 +360,6 @@ void load_handler(struct player_t *player)
         }
 
         player->portfolio[player->portfolio_len - 1].symbol = sym;
-
-        ullong namelen;
-        if(fread(&namelen, sizeof(namelen), 1, f) != 1)
-        {
-            printf("FATAL: Save is corrupted (name length too short).\n");
-            exit(EXIT_FAILURE);
-        }
-        namelen = to_sys64(namelen);
-        char *name = malloc(namelen + 1);
-        if(fread(name, namelen + 1, 1, f) != 1)
-        {
-            printf("FATAL: Save is corrupted (name too short).\n");
-            exit(EXIT_FAILURE);
-        }
-
-        player->portfolio[player->portfolio_len - 1].fullname = name;
 
         ullong count;
         if(fread(&count, sizeof(count), 1, f) != 1)
