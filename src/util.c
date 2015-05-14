@@ -175,3 +175,17 @@ uint64_t to_sys64(uint64_t n)
     else
         return to_be64(n);
 }
+
+struct stock_t *find_stock(struct player_t *player, char *sym)
+{
+    printf("find stock %s\n", sym);
+    for(int i = 0; i < player->portfolio_len; ++i)
+    {
+        if(strcmp(player->portfolio[i].symbol, sym) == 0)
+        {
+            return player->portfolio + i;
+        }
+    }
+
+    return NULL;
+}
