@@ -10,16 +10,8 @@ void sell_handler(struct player_t *player)
     printf("Getting stock information...\n");
 
     struct stock_t *stock = NULL;
-    uint stock_idx;
 
-    for(stock_idx = 0; stock_idx < player->portfolio_len; ++stock_idx)
-    {
-        if(strcmp(player->portfolio[stock_idx].symbol, sym) == 0)
-        {
-            stock = player->portfolio + stock_idx;
-            break;
-        }
-    }
+    stock = find_stock(player, sym);
 
     if(!stock)
     {
@@ -32,25 +24,25 @@ void sell_handler(struct player_t *player)
     printf("You currently own %llu shares of '%s' (%s) valued at $%llu.%02llu each.\n",
            stock->count, stock->fullname, stock->symbol, stock->current_price.cents / 100, stock->current_price.cents % 100);
 
-    ullong sell = 0;
+    ullong sell_count = 0;
     printf("How many shares do you wish to sell? ");
-    scanf("%llu", &sell);
+    scanf("%llu", &sell_count);
 
-    if(!sell)
+    if(!sell_count)
     {
         printf("Sale cancelled.\n");
         return;
     }
 
-    if(stock->count < sell)
+    if(stock->count < sell_count)
     {
         printf("You don't own enough shares!\n");
         return;
     }
 
-    ullong sell_total = stock->current_price.cents * sell;
+    ullong sell_total = stock->current_price.cents * sell_count;
 
-    printf("This will sell %llu shares for $%llu.%02llu total. Proceed? ", sell, sell_total / 100, sell_total % 100);
+    printf("This will sell %llu shares for $%llu.%02llu total.\nProceed? ", sell_count, sell_total / 100, sell_total % 100);
 
     char response[16];
     scanf("%15s", response);
@@ -58,8 +50,9 @@ void sell_handler(struct player_t *player)
 
     if(response[0] == 'y')
     {
-        stock->count -= sell;
+        stock->count -= sell_count;
 
+#if 0
         if(stock->count == 0)
         {
             /* remove this item from the portfolio */
@@ -67,10 +60,13 @@ void sell_handler(struct player_t *player)
             player->portfolio_len -= 1;
             player->portfolio = realloc(player->portfolio, sizeof(struct stock_t) * player->portfolio_len);
         }
+#endif
 
         player->cash.cents += sell_total;
 
-        printf("%llu shares sold for $%llu.%02llu total.\n", sell, sell_total / 100, sell_total % 100);
+        add_hist(stock, SELL, sell_count);
+
+        printf("%llu shares sold for $%llu.%02llu total.\n", sell_count, sell_total / 100, sell_total % 100);
     }
     else
     {

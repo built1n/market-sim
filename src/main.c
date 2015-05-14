@@ -1,12 +1,5 @@
 #include "globals.h"
 
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <curl/curl.h>
-
 /*** utility functions ***/
 
 void update_handler(struct player_t *player)
@@ -55,7 +48,7 @@ int main(int argc, char *argv[])
             {
                 struct stock_t *stock = player->portfolio + i;
                 ullong total_value = stock->count * stock->current_price.cents;
-                printf("%6s %30s %5llu  * $%5llu.%02llu = $%6llu.%02llu\n",
+                printf("%6s %40s %5llu  * $%5llu.%02llu = $%6llu.%02llu\n",
                        stock->symbol, stock->fullname, stock->count, stock->current_price.cents / 100, stock->current_price.cents % 100,
                        total_value / 100, total_value % 100);
 
@@ -81,6 +74,7 @@ int main(int argc, char *argv[])
             { "[B]uy", "buy", buy_handler },
             { "[S]ell", "sell", sell_handler },
             { "[U]pdate stock prices", "update", update_handler },
+            { "Stock [h]istory", "history", history_handler },
             { "[W]rite portfolio", "write", save_handler },
             { "[L]oad portfolio", "load", load_handler },
             { "[Q]uit", "quit", quit_handler },
