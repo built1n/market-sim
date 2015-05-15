@@ -154,7 +154,7 @@ uint64_t to_be64(uint64_t n)
         detect_endianness();
     }
 
-    if(BIG)
+    if(endianness == LITTLE)
     {
         n = (n & 0x00000000FFFFFFFF) << 32 | (n & 0xFFFFFFFF00000000) >> 32;
         n = (n & 0x0000FFFF0000FFFF) << 16 | (n & 0xFFFF0000FFFF0000) >> 16;
@@ -174,6 +174,18 @@ uint64_t to_sys64(uint64_t n)
         return n;
     else
         return to_be64(n);
+}
+
+uint16_t to_sys16(uint16_t n)
+{
+    if(!endianness)
+    {
+        detect_endianness();
+    }
+
+    if(endianness == BIG)
+        return n;
+
 }
 
 struct stock_t *find_stock(struct player_t *player, char *sym)
