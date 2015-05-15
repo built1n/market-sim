@@ -19,7 +19,9 @@ void sell_handler(struct player_t *player)
         return;
     }
 
-    update_handler(player);
+    printf("Updating prices...\n");
+
+    get_stock_info(stock->symbol, &stock->current_price, &stock->fullname);
 
     printf("You currently own %llu shares of '%s' (%s) valued at $%llu.%02llu each.\n",
            stock->count, stock->fullname, stock->symbol, stock->current_price.cents / 100, stock->current_price.cents % 100);

@@ -109,15 +109,12 @@ bool get_stock_info(char *symbol, struct money_t *price, char **name_ret)
 
     free(buf.data);
 
-    /* remove the decimal point */
+    ullong dollars, cents;
 
-    for(int i = 0; i < price_len; ++i)
-    {
-        if(pricebuf[i] == '.')
-            memmove(pricebuf + i, pricebuf + i + 1, price_len - i);
-    }
+    /* dirty hack! */
+    sscanf(pricebuf, "%llu.%2llu", &dollars, &cents);
 
-    price->cents = strtoull(pricebuf, NULL, 10);
+    price->cents = dollars * 100 + cents;
 
     free(pricebuf);
 
@@ -199,7 +196,6 @@ uint16_t to_sys16(uint16_t n)
 
 struct stock_t *find_stock(struct player_t *player, char *sym)
 {
-    printf("find stock %s\n", sym);
     for(int i = 0; i < player->portfolio_len; ++i)
     {
         if(strcmp(player->portfolio[i].symbol, sym) == 0)

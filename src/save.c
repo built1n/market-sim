@@ -64,7 +64,6 @@ void save_handler(struct player_t *player)
         struct history_item *hist = stock->history;
         while(hist)
         {
-            printf("WRITING HISTORY ITEM %d\n", hist->action);
             write_be32(f, hist->action);
             write_be64(f, hist->count);
             write_be64(f, hist->price.cents);
