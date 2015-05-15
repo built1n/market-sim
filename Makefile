@@ -3,7 +3,7 @@ CC = cc
 SRC := $(wildcard src/*.c)
 OBJ := $(SRC:.c=.o)
 
-CFLAGS = -Isrc/ -O3 -std=c99 -g -Wall -fsanitize=address -lcurl
+CFLAGS = -Isrc/ -O3 -std=c99 -g -Wall -lcurl -fsanitize=address
 
 HEADERS := $(wildcard src/*.h)
 

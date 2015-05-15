@@ -20,12 +20,23 @@ struct money_t {
     ullong cents;
 };
 
-enum history_action { BUY, SELL };
+enum history_action { BUY = 0, SELL };
+
+struct history_time {
+    ushort year; /* since 2000 */
+    uchar month; /* 0 = jan, 11 = dec */
+    uchar day;
+    uchar hour; /* 0-23 */
+    uchar minute;
+    uchar second;
+};
 
 struct history_item {
     enum history_action action;
     ullong count;
     struct money_t price;
+
+    struct history_time action_time;
 
     struct history_item *next;
 };
@@ -35,7 +46,10 @@ struct stock_t {
     char *fullname;
     ullong count;
     struct money_t current_price;
+
     struct history_item *history;
+
+    uint history_len;
 };
 
 struct player_t {
@@ -53,6 +67,10 @@ void all_upper(char*);
 bool get_stock_info(char *sym, struct money_t*, char **name);
 uint64_t to_sys64(uint64_t);
 uint64_t to_be64(uint64_t);
+uint32_t to_sys32(uint32_t);
+uint32_t to_be32(uint32_t);
+uint16_t to_sys16(uint16_t);
+uint16_t to_be16(uint16_t);
 struct stock_t *find_stock(struct player_t*, char*);
 void add_hist(struct stock_t*, enum history_action, ullong count);
 

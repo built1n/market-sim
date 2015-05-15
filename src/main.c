@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
             { "[B]uy", "buy", buy_handler },
             { "[S]ell", "sell", sell_handler },
             { "[U]pdate stock prices", "update", update_handler },
-            { "Stock [h]istory", "history", history_handler },
+            { "Stock [i]nfo", "info", history_handler },
             { "[W]rite portfolio", "write", save_handler },
             { "[L]oad portfolio", "load", load_handler },
             { "[Q]uit", "quit", quit_handler },

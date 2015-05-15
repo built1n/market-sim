@@ -1,6 +1,7 @@
 #include "globals.h"
 
-#include <curl/curl.h>
+/* for htnos/htnol */
+#include <arpa/inet.h>
 
 void cleanup(void)
 {
@@ -176,16 +177,24 @@ uint64_t to_sys64(uint64_t n)
         return to_be64(n);
 }
 
+uint32_t to_be32(uint32_t n)
+{
+    return htonl(n);
+}
+
+uint32_t to_sys32(uint32_t n)
+{
+    return ntohl(n);
+}
+
+uint16_t to_be16(uint16_t n)
+{
+    return htons(n);
+}
+
 uint16_t to_sys16(uint16_t n)
 {
-    if(!endianness)
-    {
-        detect_endianness();
-    }
-
-    if(endianness == BIG)
-        return n;
-
+    return ntohs(n);
 }
 
 struct stock_t *find_stock(struct player_t *player, char *sym)
