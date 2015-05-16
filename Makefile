@@ -3,13 +3,13 @@ CC = cc
 SRC := $(wildcard src/*.c)
 OBJ := $(SRC:.c=.o)
 
-CFLAGS = -Isrc/ -O3 -std=c99 -g -Wall -lcurl -fsanitize=address
+CFLAGS = -Isrc/ -O3 -g -Wall -fsanitize=address -std=c99
 
 HEADERS := $(wildcard src/*.h)
 
 market-sim: $(OBJ) Makefile $(HEADERS)
 	@echo "LD $@"
-	@$(CC) $(OBJ) -o $@ $(CFLAGS)
+	@$(CC) $(OBJ) -o $@ $(CFLAGS) -lcurl
 
 %.o: %.c Makefile $(HEADERS)
 	@echo "CC $<"

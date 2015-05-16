@@ -31,39 +31,10 @@ int main(int argc, char *argv[])
 
     update_handler(player);
 
+    print_handler(player);
+
     while(1)
     {
-        printf("\nYour portfolio:\n");
-        printf("================================================================================\n");
-
-        ullong portfolio_value = 0;
-
-        if(player->portfolio_len == 0)
-        {
-            printf(" < EMPTY >\n");
-        }
-        else
-        {
-            for(int i = 0; i < player->portfolio_len; ++i)
-            {
-                struct stock_t *stock = player->portfolio + i;
-                ullong total_value = stock->count * stock->current_price.cents;
-                printf("%6s %40s %5llu  * $%5llu.%02llu = $%6llu.%02llu\n",
-                       stock->symbol, stock->fullname, stock->count, stock->current_price.cents / 100, stock->current_price.cents % 100,
-                       total_value / 100, total_value % 100);
-
-                portfolio_value += stock->current_price.cents * stock->count;
-            }
-        }
-        printf("================================================================================\n");
-
-        printf("Portfolio value: $%llu.%02llu\n", portfolio_value / 100, portfolio_value % 100);
-
-        printf("Current cash: $%llu.%02llu\n", player->cash.cents / 100, player->cash.cents % 100);
-
-        ullong total = portfolio_value + player->cash.cents;
-        printf("Total capital: $%llu.%02llu\n", total / 100, total % 100);
-
         struct command_t {
             const char *name;
             const char *command;
@@ -73,8 +44,9 @@ int main(int argc, char *argv[])
         const struct command_t commands[] = {
             { "[B]uy", "buy", buy_handler },
             { "[S]ell", "sell", sell_handler },
+            { "[P]rint portfolio", "print", print_handler },
             { "[U]pdate stock prices", "update", update_handler },
-            { "Stock [i]nfo", "info", history_handler },
+            { "Stock [i]nfo", "info", info_handler },
             { "[W]rite portfolio", "write", save_handler },
             { "[L]oad portfolio", "load", load_handler },
             { "[Q]uit", "quit", quit_handler },
@@ -86,10 +58,14 @@ int main(int argc, char *argv[])
         }
 
         printf("What would you like to do? ");
-        char cmdbuf[32];
-        scanf("%31s", cmdbuf);
+        char *cmdbuf = NULL;
+        size_t cmdlen = 0;
+        cmdlen = getline(&cmdbuf, &cmdlen, stdin);
 
         all_lower(cmdbuf);
+
+        cmdbuf[cmdlen - 1] = '\0';
+
         /* find the best command */
 
         int best_command = -1;
@@ -141,5 +117,7 @@ int main(int argc, char *argv[])
 
         if(best_command >= 0)
             commands[best_command].handler(player);
+
+        printf("\n");
     }
 }

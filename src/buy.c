@@ -2,10 +2,8 @@
 
 void buy_handler(struct player_t *player)
 {
-    char *sym = malloc(16);
     printf("Enter the ticker symbol of the stock you wish to purchase: ");
-    scanf("%15s", sym);
-    all_upper(sym);
+    char *sym = get_ticker();
 
     struct money_t price;
 
