@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -73,11 +74,14 @@ uint16_t to_sys16(uint16_t);
 uint16_t to_be16(uint16_t);
 struct stock_t *find_stock(struct player_t*, char*);
 void add_hist(struct stock_t*, enum history_action, ullong count);
+void print_history(struct stock_t*);
+char *get_ticker(void);
 
 void buy_handler(struct player_t*);
 void sell_handler(struct player_t*);
-void history_handler(struct player_t*);
+void info_handler(struct player_t*);
 void update_handler(struct player_t*);
 void save_handler(struct player_t*);
 void load_handler(struct player_t*);
 void quit_handler(struct player_t*);
+void print_handler(struct player_t*);

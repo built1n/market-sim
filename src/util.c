@@ -206,3 +206,47 @@ struct stock_t *find_stock(struct player_t *player, char *sym)
 
     return NULL;
 }
+
+void print_handler(struct player_t *player)
+{
+    printf("\nYour portfolio:\n");
+    printf("================================================================================\n");
+
+    ullong portfolio_value = 0;
+
+    if(player->portfolio_len == 0)
+    {
+        printf(" < EMPTY >\n");
+    }
+    else
+    {
+        for(int i = 0; i < player->portfolio_len; ++i)
+        {
+            struct stock_t *stock = player->portfolio + i;
+            ullong total_value = stock->count * stock->current_price.cents;
+            printf("%6s %40s %5llu  * $%5llu.%02llu = $%6llu.%02llu\n",
+                   stock->symbol, stock->fullname, stock->count, stock->current_price.cents / 100, stock->current_price.cents % 100,
+                   total_value / 100, total_value % 100);
+
+            portfolio_value += stock->current_price.cents * stock->count;
+        }
+    }
+    printf("================================================================================\n");
+
+    printf("Portfolio value: $%llu.%02llu\n", portfolio_value / 100, portfolio_value % 100);
+
+    printf("Current cash: $%llu.%02llu\n", player->cash.cents / 100, player->cash.cents % 100);
+
+    ullong total = portfolio_value + player->cash.cents;
+    printf("Total capital: $%llu.%02llu\n", total / 100, total % 100);
+}
+
+char* get_ticker(void)
+{
+    char *ret = NULL;
+    size_t len = 0;
+    len = getline(&ret, &len, stdin);
+    all_upper(ret);
+    ret[len - 1] = '\0';
+    return ret;
+}

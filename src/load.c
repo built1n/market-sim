@@ -2,7 +2,7 @@
 
 /* NOTE: integers are represented internally by unsigned long long ints, but in the save they are always 64 bits */
 
-#define FAIL() exit(*(char*)NULL);
+#define FAIL() exit(EXIT_FAILURE);
 
 uint64_t read_be64(FILE *f)
 {
@@ -52,7 +52,7 @@ void load_handler(struct player_t *player)
     char magic[6];
     if(!f || fread(magic, 1, sizeof(magic), f) != 6 || memcmp(magic, "PORTv2", sizeof(magic)) != 0)
     {
-        printf("FATAL: Failed to load save.");
+        printf("FATAL: Failed to load save.\n");
         exit(EXIT_FAILURE);
     }
 
