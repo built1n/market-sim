@@ -114,6 +114,8 @@ int main(int argc, char *argv[])
         if(best_command >= 0)
             commands[best_command].handler(player);
 
+        free(cmdbuf);
+
         printf("\n");
     }
 }
