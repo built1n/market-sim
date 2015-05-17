@@ -60,6 +60,12 @@ struct player_t {
     bool need_to_free_portfolio;
 };
 
+struct command_t {
+    const char *name;
+    const char *command;
+    void (*handler)(struct player_t*);
+};
+
 /*** prototypes ***/
 void cleanup(void);
 int compare_stocks(const void*, const void*);
@@ -78,6 +84,7 @@ void print_history(struct stock_t*);
 char *read_ticker(void);
 char *read_string(void);
 ullong read_int(void);
+void parse_args(int argc, char *argv[]);
 
 void buy_handler(struct player_t*);
 void sell_handler(struct player_t*);
@@ -87,3 +94,12 @@ void save_handler(struct player_t*);
 void load_handler(struct player_t*);
 void quit_handler(struct player_t*);
 void print_handler(struct player_t*);
+
+#ifndef NDEBUG
+
+void debug_handler(struct player_t*);
+void debug_init(void);
+
+#endif
+
+void do_menu(struct player_t*, const struct command_t*, uint len, const char *prompt);
