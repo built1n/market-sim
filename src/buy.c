@@ -14,6 +14,7 @@ void buy_handler(struct player_t *player)
     if(!get_stock_info(sym, &price, &name))
     {
         printf("Failed to get query information for '%s'.\n", sym);
+        free(sym);
         return;
     }
 
@@ -45,36 +46,32 @@ void buy_handler(struct player_t *player)
     {
         printf("Confirmed.\n");
 
-        struct stock_t *stock;
+        struct stock_t *stock = find_stock(player, sym);
 
         /* add the stock to the portfolio or increase the count of a stock */
 
-        for(uint i = 0; i < player->portfolio_len; ++i)
+        if(stock)
         {
-            if(strcmp(player->portfolio[i].symbol, sym) == 0)
-            {
-                stock = player->portfolio + i;
-                stock->count += count;
-                stock->current_price.cents = price.cents;
-                goto done;
-            }
+            stock->count += count;
+            stock->current_price.cents = price.cents;
         }
+        else
+        {
+            /* stock is not in portfolio yet, add it */
 
-        /* not found, add a new one */
-        player->portfolio_len += 1;
-        player->portfolio = realloc(player->portfolio, player->portfolio_len * sizeof(struct stock_t));
-        player->need_to_free_portfolio = true;
+            player->portfolio_len += 1;
+            player->portfolio = realloc(player->portfolio, player->portfolio_len * sizeof(struct stock_t));
+            player->need_to_free_portfolio = true;
 
-        stock = player->portfolio + player->portfolio_len - 1;
+            stock = player->portfolio + player->portfolio_len - 1;
 
-        memset(stock, 0, sizeof(struct stock_t));
+            memset(stock, 0, sizeof(struct stock_t));
 
-        stock->symbol = sym;
-        stock->fullname = name;
-        stock->count = count;
-        stock->current_price.cents = price.cents;
-
-    done:
+            stock->symbol = sym;
+            stock->fullname = name;
+            stock->count = count;
+            stock->current_price.cents = price.cents;
+        }
 
         player->cash.cents -= cost;
 
@@ -87,4 +84,6 @@ void buy_handler(struct player_t *player)
     {
         printf("Not confirmed.\n");
     }
+
+    free(response);
 }
