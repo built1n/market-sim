@@ -46,6 +46,7 @@ void load_handler(struct player_t *player)
     if(player->need_to_free_portfolio)
         free(player->portfolio);
     player->portfolio_len = 0;
+    player->portfolio = NULL;
 
     FILE *f = fopen(filename, "rb");
     free(filename);
