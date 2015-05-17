@@ -196,7 +196,7 @@ uint16_t to_sys16(uint16_t n)
 
 struct stock_t *find_stock(struct player_t *player, char *sym)
 {
-    for(int i = 0; i < player->portfolio_len; ++i)
+    for(uint i = 0; i < player->portfolio_len; ++i)
     {
         if(strcmp(player->portfolio[i].symbol, sym) == 0)
         {
@@ -209,7 +209,7 @@ struct stock_t *find_stock(struct player_t *player, char *sym)
 
 void print_handler(struct player_t *player)
 {
-    printf("\nYour portfolio:\n");
+    printf("Your portfolio:\n");
     printf("================================================================================\n");
 
     ullong portfolio_value = 0;
@@ -220,7 +220,7 @@ void print_handler(struct player_t *player)
     }
     else
     {
-        for(int i = 0; i < player->portfolio_len; ++i)
+        for(uint i = 0; i < player->portfolio_len; ++i)
         {
             struct stock_t *stock = player->portfolio + i;
             ullong total_value = stock->count * stock->current_price.cents;
@@ -235,9 +235,10 @@ void print_handler(struct player_t *player)
 
     printf("Portfolio value: $%llu.%02llu\n", portfolio_value / 100, portfolio_value % 100);
 
-    printf("Current cash: $%llu.%02llu\n", player->cash.cents / 100, player->cash.cents % 100);
+    printf("Cash balance: $%llu.%02llu\n", player->cash.cents / 100, player->cash.cents % 100);
 
     ullong total = portfolio_value + player->cash.cents;
+
     printf("Total capital: $%llu.%02llu\n", total / 100, total % 100);
 }
 
@@ -246,7 +247,8 @@ char *read_string(void)
     char *ret = NULL;
     size_t len = 0;
     len = getline(&ret, &len, stdin);
-    ret[len - 1] = '\0';
+    if(len)
+        ret[len - 1] = '\0';
     return ret;
 }
 
@@ -266,4 +268,23 @@ ullong read_int(void)
     free(str);
 
     return ret;
+}
+
+void update_handler(struct player_t *player)
+{
+    printf("Updating stock prices...\n");
+    for(uint i = 0; i < player->portfolio_len; ++i)
+    {
+        struct stock_t *stock = player->portfolio + i;
+        printf("%s...\n", stock->symbol);
+        get_stock_info(stock->symbol, &stock->current_price, &stock->fullname);
+    }
+}
+
+void parse_args(int argc, char *argv[])
+{
+    for(int i = 1; i < argc; ++i)
+    {
+
+    }
 }

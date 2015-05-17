@@ -44,7 +44,7 @@ void sell_handler(struct player_t *player)
 
     ullong sell_total = stock->current_price.cents * sell_count;
 
-    printf("This will sell %llu shares for $%llu.%02llu total.\nProceed? ", sell_count, sell_total / 100, sell_total % 100);
+    printf("This will sell %llu share(s) for $%llu.%02llu total.\nProceed? ", sell_count, sell_total / 100, sell_total % 100);
 
     char *response = read_string();
 
@@ -67,7 +67,7 @@ void sell_handler(struct player_t *player)
 
         add_hist(stock, SELL, sell_count);
 
-        printf("%llu shares sold for $%llu.%02llu total.\n", sell_count, sell_total / 100, sell_total % 100);
+        printf("%llu share(s) sold for $%llu.%02llu total.\n", sell_count, sell_total / 100, sell_total % 100);
     }
     else
     {
