@@ -263,5 +263,7 @@ ullong read_int(void)
     ullong ret = -1;
     sscanf(str, "%llu", &ret);
 
+    free(str);
+
     return ret;
 }
