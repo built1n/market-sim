@@ -4,7 +4,7 @@ void info_handler(struct player_t *player)
 {
     char *sym;
     printf("Enter the ticker symbol of the stock to get information for: ");
-    sym = get_ticker();
+    sym = read_ticker();
 
     struct stock_t *stock = find_stock(player, sym);
 

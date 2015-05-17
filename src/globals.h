@@ -75,7 +75,9 @@ uint16_t to_be16(uint16_t);
 struct stock_t *find_stock(struct player_t*, char*);
 void add_hist(struct stock_t*, enum history_action, ullong count);
 void print_history(struct stock_t*);
-char *get_ticker(void);
+char *read_ticker(void);
+char *read_string(void);
+ullong read_int(void);
 
 void buy_handler(struct player_t*);
 void sell_handler(struct player_t*);

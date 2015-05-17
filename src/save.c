@@ -37,11 +37,12 @@ void save_handler(struct player_t *player)
 {
     printf("Enter the file to save your portfolio in: ");
 
-    char buf[128];
-    scanf("%127s", buf);
+    char *filename = read_string();
 
     printf("Writing data...\n");
-    FILE *f = fopen(buf, "wb");
+    FILE *f = fopen(filename, "wb");
+
+    free(filename);
 
     const char *magic = "PORTv2";
     fwrite(magic, strlen(magic), 1, f);
@@ -81,5 +82,5 @@ void save_handler(struct player_t *player)
 
     fclose(f);
 
-    printf("Done saving.");
+    printf("Done saving.\n");
 }
