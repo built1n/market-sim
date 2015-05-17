@@ -241,12 +241,27 @@ void print_handler(struct player_t *player)
     printf("Total capital: $%llu.%02llu\n", total / 100, total % 100);
 }
 
-char* get_ticker(void)
+char *read_string(void)
 {
     char *ret = NULL;
     size_t len = 0;
     len = getline(&ret, &len, stdin);
-    all_upper(ret);
     ret[len - 1] = '\0';
+    return ret;
+}
+
+char *read_ticker(void)
+{
+    char *str = read_string();
+    all_upper(str);
+    return str;
+}
+
+ullong read_int(void)
+{
+    char *str = read_string();
+    ullong ret = -1;
+    sscanf(str, "%llu", &ret);
+
     return ret;
 }

@@ -2,10 +2,8 @@
 
 void sell_handler(struct player_t *player)
 {
-    char *sym = malloc(16);
     printf("Enter the ticker symbol of the stock you wish to sell: ");
-    scanf("%15s", sym);
-    all_upper(sym);
+    char *sym = read_ticker();
 
     printf("Getting stock information...\n");
 
@@ -26,9 +24,8 @@ void sell_handler(struct player_t *player)
     printf("You currently own %llu shares of '%s' (%s) valued at $%llu.%02llu each.\n",
            stock->count, stock->fullname, stock->symbol, stock->current_price.cents / 100, stock->current_price.cents % 100);
 
-    ullong sell_count = 0;
     printf("How many shares do you wish to sell? ");
-    scanf("%llu", &sell_count);
+    ullong sell_count = read_int();
 
     if(!sell_count)
     {
@@ -46,9 +43,7 @@ void sell_handler(struct player_t *player)
 
     printf("This will sell %llu shares for $%llu.%02llu total.\nProceed? ", sell_count, sell_total / 100, sell_total % 100);
 
-    char response[16];
-    scanf("%15s", response);
-    all_lower(response);
+    char *response = read_string();
 
     if(response[0] == 'y')
     {
@@ -74,4 +69,6 @@ void sell_handler(struct player_t *player)
     {
         printf("Not confirmed.\n");
     }
+
+    free(response);
 }

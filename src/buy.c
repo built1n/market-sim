@@ -3,7 +3,7 @@
 void buy_handler(struct player_t *player)
 {
     printf("Enter the ticker symbol of the stock you wish to purchase: ");
-    char *sym = get_ticker();
+    char *sym = read_ticker();
 
     struct money_t price;
 
@@ -21,9 +21,7 @@ void buy_handler(struct player_t *player)
     printf("Price per share: $%llu.%02llu\n", price.cents / 100, price.cents % 100);
     printf("Enter the number of shares to be purchased (maximum %llu): ", player->cash.cents / price.cents);
 
-    ullong count = 0;
-
-    scanf("%llu", &count);
+    ullong count = read_int();
 
     if(count <= 0)
     {
@@ -40,8 +38,7 @@ void buy_handler(struct player_t *player)
     }
 
     printf("This will cost $%llu.%02llu. Are you sure? ", cost / 100, cost % 100);
-    char response[16];
-    scanf("%15s", response);
+    char *response = read_string();
     all_lower(response);
 
     if(response[0] == 'y')

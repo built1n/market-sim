@@ -58,13 +58,9 @@ int main(int argc, char *argv[])
         }
 
         printf("What would you like to do? ");
-        char *cmdbuf = NULL;
-        size_t cmdlen = 0;
-        cmdlen = getline(&cmdbuf, &cmdlen, stdin);
+        char *cmdbuf = read_string();
 
         all_lower(cmdbuf);
-
-        cmdbuf[cmdlen - 1] = '\0';
 
         /* find the best command */
 
