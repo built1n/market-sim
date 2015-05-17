@@ -8,13 +8,14 @@ void info_handler(struct player_t *player)
 
     struct stock_t *stock = find_stock(player, sym);
 
-    free(sym);
-
     if(!stock)
     {
         printf("Couldn't find '%s' in portfolio.\n", sym);
+        free(sym);
         return;
     }
+
+    free(sym);
 
     printf("Transaction history:\n");
     print_history(stock);

@@ -52,6 +52,7 @@ void sell_handler(struct player_t *player)
     {
         stock->count -= sell_count;
 
+        /* commented out to preserve history */
 #if 0
         if(stock->count == 0)
         {
