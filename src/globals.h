@@ -94,6 +94,7 @@ void save_handler(struct player_t*);
 void load_handler(struct player_t*);
 void quit_handler(struct player_t*);
 void print_handler(struct player_t*);
+void help_handler(struct player_t*);
 
 #ifndef NDEBUG
 
