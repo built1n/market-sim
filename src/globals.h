@@ -88,6 +88,7 @@ char *read_ticker(void);
 char *read_string(void);
 ullong read_int(void);
 void parse_args(int argc, char *argv[]);
+char *csv_read(char**);
 
 void buy_handler(struct player_t*);
 void sell_handler(struct player_t*);
