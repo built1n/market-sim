@@ -1,3 +1,6 @@
+#ifndef _MARKET_SIM_H_
+#define _MARKET_SIM_H_
+
 #include <assert.h>
 #include <ctype.h>
 #include <stdbool.h>
@@ -104,3 +107,5 @@ void debug_init(void);
 #endif
 
 void do_menu(struct player_t*, const struct command_t*, uint len, const char *prompt);
+
+#endif
