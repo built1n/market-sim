@@ -1,9 +1,9 @@
-CC = clang
+CC = cc
 
 SRC := $(wildcard src/*.c)
 OBJ := $(SRC:.c=.o)
 
-CFLAGS = -Isrc/ -O3 -g -Wall -Wextra
+CFLAGS = -Isrc/ -O0 -g -Wall -Wextra -std=c99
 
 HEADERS := $(wildcard src/*.h)
 
