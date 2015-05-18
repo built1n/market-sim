@@ -74,7 +74,8 @@ bool get_stock_info(char *symbol, struct money_t *price, char **name_ret)
 
     /** now parse the data **/
 
-    char ** ptr = &buf.data;
+    char *p1 = buf.data;
+    char ** ptr = &p1;
 
     *name_ret = csv_read(ptr);
 
@@ -83,9 +84,11 @@ bool get_stock_info(char *symbol, struct money_t *price, char **name_ret)
 
     /* dirty hack! */
     sscanf(pricebuf, "%llu.%2llu", &dollars, &cents);
+    free(pricebuf);
 
     price->cents = dollars * 100 + cents;
 
+    free(buf.data);
     return true;
 }
 
