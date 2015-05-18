@@ -55,68 +55,36 @@ bool get_stock_info(char *symbol, struct money_t *price, char **name_ret)
     char url[256];
     snprintf(url, sizeof(url), "http://download.finance.yahoo.com/d/quotes.csv?s=%s&f=nl1&e=.csv", symbol);
 
-    curl_easy_setopt(curl, CURLOPT_URL, url);
-
     struct data_buffer_t buf;
     memset(&buf, 0, sizeof(buf));
 
+    curl_easy_setopt(curl, CURLOPT_URL, url);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, download_callback);
-
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buf);
 
     CURLcode res = curl_easy_perform(curl);
-
     curl_easy_cleanup(curl);
+
+    if(res != CURLE_OK || buf.data[0] != '"')
+        printf("Failed querying information for '%s'.\n", symbol);
+
+    /* null-terminate buffer */
+    buf.data = realloc(buf.data, buf.back + 1);
+    buf.data[buf.back] = '\0';
 
     /** now parse the data **/
 
-    /* the stock name is in quotes, find it! */
+    char ** ptr = &buf.data;
 
-    /* check for validity */
-    if(buf.back == 0 || buf.data[0] != '"' || res != CURLE_OK)
-    {
-        printf("Failed to retrieve stock data.\n");
-        if(res != CURLE_OK)
-        {
-            printf("Download library error (%d): '%s'\n", res, curl_easy_strerror(res));
-        }
-        return false;
-    }
+    *name_ret = csv_read(ptr);
 
-    uint name_len = 0;
-    for(uint i = 1; i < buf.back; ++i)
-    {
-        if(buf.data[i] == '"')
-            break;
-        ++name_len;
-    }
-
-    const uint name_offs = 1;
-    uint price_offs = name_len + 3;
-    uint price_len = buf.back - price_offs;
-
-    char *name = malloc(name_len + 1);
-    memcpy(name, buf.data + name_offs, name_len);
-    name[name_len] = '\0';
-
-    *name_ret = name;
-
-    /* get price */
-
-    char *pricebuf = malloc(price_len + 1);
-    memcpy(pricebuf, buf.data + price_offs, price_len);
-    pricebuf[price_len] = '\0';
-
-    free(buf.data);
-
+    char *pricebuf = csv_read(ptr);
     ullong dollars, cents;
 
     /* dirty hack! */
     sscanf(pricebuf, "%llu.%2llu", &dollars, &cents);
 
     price->cents = dollars * 100 + cents;
-
-    free(pricebuf);
 
     return true;
 }
