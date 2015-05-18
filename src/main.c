@@ -41,8 +41,6 @@ int main(int argc, char *argv[])
 #endif
             { "[Q]uit", "quit", quit_handler },
         };
-        print_handler(player);
-        printf("\n");
 
         do_menu(player, commands, ARRAYLEN(commands), "What would you like to do? ");
     }
