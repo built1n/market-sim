@@ -17,6 +17,10 @@ void info_handler(struct player_t *player)
 
     free(sym);
 
-    printf("Transaction history:\n");
+    printf("Transaction history for '%s':\n", stock->symbol);
+    printf("================================================================================\n");
     print_history(stock);
+    printf("================================================================================\n");
+
+    printf("Current price: $%llu.%02llu\n", stock->current_price.cents / 100, stock->current_price.cents % 100);
 }
