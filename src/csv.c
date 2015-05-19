@@ -32,7 +32,5 @@ char *csv_read(char **ptr)
         (*ptr)++;
     }
 
-    /* shouldn't get here */
-    assert(false);
     return NULL;
 }
