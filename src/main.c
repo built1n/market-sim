@@ -10,7 +10,6 @@ void quit_handler(struct player_t *player)
 
 int main(int argc, char *argv[])
 {
-
     atexit(cleanup);
 
     curl_global_init(CURL_GLOBAL_DEFAULT);
@@ -23,7 +22,7 @@ int main(int argc, char *argv[])
     if(args_status & ARG_FAILURE)
         return EXIT_FAILURE;
 
-    if(args_status & ARG_LOADED)
+    if(!args_status & ARG_LOADED)
         player->cash.cents = 1000 * 100;
 
     while(1)
