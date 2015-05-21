@@ -15,7 +15,15 @@ void info_handler(struct player_t *player)
         return;
     }
 
+    printf("Updating price data...\n");
+    if(!get_stock_info(sym, &stock->current_price, &stock->fullname))
+    {
+        printf("Failed to update prices.\n");
+        return;
+    }
+
     free(sym);
+
 
     printf("Transaction history for '%s':\n", stock->symbol);
     printf("================================================================================\n");

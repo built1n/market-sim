@@ -1,4 +1,4 @@
 Market-Sim
 ==========
 
-A market simulator
+A stock market simulation game
