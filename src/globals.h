@@ -113,13 +113,6 @@ void load_handler(struct player_t*);
 void quit_handler(struct player_t*);
 void print_handler(struct player_t*);
 
-#ifndef NDEBUG
-
-void debug_handler(struct player_t*);
-void debug_init(void);
-
-#endif
-
 void do_menu(struct player_t*, const struct command_t*, uint len, const char *prompt);
 
 #endif
