@@ -3,7 +3,9 @@ CC = cc
 SRC := $(wildcard src/*.c)
 OBJ := $(SRC:.c=.o)
 
-CFLAGS = -Isrc/ -O0 -g -Wall -Wextra -std=c99 -fsanitize=address
+GIT_VERSION := $(shell git describe --abbrev=8 --dirty --always --tags)
+
+CFLAGS = -Isrc/ -O2 -g -Wall -Wextra -std=gnu99 -fsanitize=address -DVERSION_INFO=\"$(GIT_VERSION)\"
 
 HEADERS := $(wildcard src/*.h)
 

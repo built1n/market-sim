@@ -12,7 +12,7 @@ void add_hist(struct stock_t *stock, enum history_action action, ullong count)
     time_t timer = time(0);
     struct tm *tm = localtime(&timer);
 
-    newhist->action_time.year = tm->tm_year - 100;
+    newhist->action_time.year = tm->tm_year - (EPOCH_YEAR - 1900);
     newhist->action_time.month = tm->tm_mon;
     newhist->action_time.day = tm->tm_mday;
     newhist->action_time.hour = tm->tm_hour;
@@ -49,7 +49,7 @@ void print_history(struct stock_t *stock)
     {
         ullong total = hist->count * hist->price.cents;
 
-        printf("[%d-%d-%d %d:%02d:%02d] ", hist->action_time.year + 2000, hist->action_time.month + 1, hist->action_time.day + 1,
+        printf("[%d-%d-%d %d:%02d:%02d] ", hist->action_time.year + EPOCH_YEAR, hist->action_time.month + 1, hist->action_time.day + 1,
                hist->action_time.hour, hist->action_time.minute, hist->action_time.second);
 
         switch(hist->action)

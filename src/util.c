@@ -258,10 +258,64 @@ void update_handler(struct player_t *player)
     }
 }
 
-void parse_args(int argc, char *argv[])
+uint parse_args(struct player_t *player, int argc, char *argv[])
 {
+    uint ret = 0;
+    char *port_file = NULL;
+
     for(int i = 1; i < argc; ++i)
     {
+        char *arg = argv[i];
+        if(arg && arg[0] != '\0')
+        {
+            if(arg[0] == '-')
+            {
+                if(strcmp(arg, "--help") == 0 ||
+                   strcmp(arg, "-h")     == 0)
+                {
+                    print_usage(argc, argv);
+                    ret |= ARG_FAILURE;
+                    break;
+                }
+                else if(strcmp(arg, "-v") == 0 ||
+                        strcmp(arg, "--verbose") == 0)
+                {
+                    ret |= ARG_VERBOSE;
+                }
+                else if(strcmp(arg, "--version") == 0)
+                {
+                    print_version();
+                    ret |= ARG_FAILURE;
+                    break;
+                }
+                else if(strcmp(arg, "--") == 0)
+                {
+                    break;
+                }
+            }
+            else
+            {
+                if(!(ret & ARG_LOADED))
+                {
+                    port_file = arg;
+                    ret |= ARG_LOADED;
+                }
+                else
+                {
+                    printf("FATAL: multiple portfolio files specified.\n");
+                    ret |= ARG_FAILURE;
+                    break;
+                }
+            }
+        }
 
     }
+
+    if(ret & ARG_FAILURE)
+        return ret;
+
+    if(port_file)
+        load_portfolio(player, port_file);
+
+    return ret;
 }
