@@ -66,7 +66,10 @@ bool get_stock_info(char *symbol, struct money_t *price, char **name_ret)
     curl_easy_cleanup(curl);
 
     if(res != CURLE_OK || buf.data[0] != '"')
+    {
         printf("Failed querying information for '%s'.\n", symbol);
+        return false;
+    }
 
     /* null-terminate buffer */
     buf.data = realloc(buf.data, buf.back + 1);
