@@ -13,10 +13,6 @@ int main(int argc, char *argv[])
 
     atexit(cleanup);
 
-#ifndef NDEBUG
-    debug_init();
-#endif
-
     curl_global_init(CURL_GLOBAL_DEFAULT);
 
     struct player_t *player = malloc(sizeof(struct player_t));
@@ -40,9 +36,6 @@ int main(int argc, char *argv[])
             { "Stock [i]nfo", "info", info_handler },
             { "[W]rite portfolio", "write", save_handler },
             { "[L]oad portfolio", "load", load_handler },
-#ifndef NDEBUG
-            { "[D]ebug menu", "debug", debug_handler },
-#endif
             { "[Q]uit", "quit", quit_handler },
         };
 
