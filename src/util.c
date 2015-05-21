@@ -194,12 +194,15 @@ void print_handler(struct player_t *player)
         for(uint i = 0; i < player->portfolio_len; ++i)
         {
             struct stock_t *stock = player->portfolio + i;
-            ullong total_value = stock->count * stock->current_price.cents;
-            printf("%6s %40s %5llu  * $%5llu.%02llu = $%6llu.%02llu\n",
-                   stock->symbol, stock->fullname, stock->count, stock->current_price.cents / 100, stock->current_price.cents % 100,
-                   total_value / 100, total_value % 100);
+            if(stock->count)
+            {
+                ullong total_value = stock->count * stock->current_price.cents;
+                printf("%6s %40s %5llu  * $%5llu.%02llu = $%6llu.%02llu\n",
+                       stock->symbol, stock->fullname, stock->count, stock->current_price.cents / 100, stock->current_price.cents % 100,
+                       total_value / 100, total_value % 100);
 
-            portfolio_value += stock->current_price.cents * stock->count;
+                portfolio_value += stock->current_price.cents * stock->count;
+            }
         }
     }
     printf("================================================================================\n");
@@ -247,8 +250,11 @@ void update_handler(struct player_t *player)
     for(uint i = 0; i < player->portfolio_len; ++i)
     {
         struct stock_t *stock = player->portfolio + i;
-        printf("%s...\n", stock->symbol);
-        get_stock_info(stock->symbol, &stock->current_price, &stock->fullname);
+        if(stock->count > 0)
+        {
+            printf("%s...\n", stock->symbol);
+            get_stock_info(stock->symbol, &stock->current_price, &stock->fullname);
+        }
     }
 }
 
