@@ -13,6 +13,16 @@
 
 #define ARRAYLEN(x) (sizeof(x) / sizeof(x[0]))
 
+/* VERSION_INFO is supplied by the compiler */
+#define PROGRAM_VERSION "prerelease (" VERSION_INFO ")"
+
+#define ARG_LOADED (1<<0)
+#define ARG_FAILURE (1<<1)
+#define ARG_VERBOSE (1<<2)
+
+/* don't change this, it will corrupt existing saves */
+#define EPOCH_YEAR 2000
+
 typedef unsigned long long ullong;
 typedef unsigned long ulong;
 typedef unsigned int uint;
@@ -27,7 +37,7 @@ struct money_t {
 enum history_action { BUY = 0, SELL };
 
 struct history_time {
-    ushort year; /* since 2000 */
+    ushort year; /* since EPOCH_YEAR */
     uchar month; /* 0 = jan, 11 = dec */
     uchar day;
     uchar hour; /* 0-23 */
@@ -87,8 +97,12 @@ void print_history(struct stock_t*);
 char *read_ticker(void);
 char *read_string(void);
 ullong read_int(void);
-void parse_args(int argc, char *argv[]);
+void print_usage(int argc, char *argv[]);
+void print_version(void);
+
+uint parse_args(struct player_t*, int argc, char *argv[]);
 char *csv_read(char**);
+void load_portfolio(struct player_t*, const char*);
 
 void buy_handler(struct player_t*);
 void sell_handler(struct player_t*);
@@ -98,7 +112,6 @@ void save_handler(struct player_t*);
 void load_handler(struct player_t*);
 void quit_handler(struct player_t*);
 void print_handler(struct player_t*);
-void help_handler(struct player_t*);
 
 #ifndef NDEBUG
 

@@ -36,11 +36,8 @@ uint8_t read_int8(FILE *f)
     return n;
 }
 
-void load_handler(struct player_t *player)
+void load_portfolio(struct player_t *player, const char *filename)
 {
-    printf("Enter the file to load portfolio from: ");
-    char *filename = read_string();
-
     printf("Loading portfolio...\n");
 
     if(player->need_to_free_portfolio)
@@ -50,7 +47,6 @@ void load_handler(struct player_t *player)
     player->portfolio = NULL;
 
     FILE *f = fopen(filename, "rb");
-    free(filename);
 
     char magic[6];
     if(!f || fread(magic, 1, sizeof(magic), f) != 6 || memcmp(magic, "PORTv2", sizeof(magic)) != 0)
@@ -122,4 +118,14 @@ void load_handler(struct player_t *player)
     } while (!feof(f) && !ferror(f));
 
     update_handler(player);
+}
+
+void load_handler(struct player_t *player)
+{
+    printf("Enter the file to load portfolio from: ");
+    char *filename = read_string();
+
+    load_portfolio(player, filename);
+
+    free(filename);
 }

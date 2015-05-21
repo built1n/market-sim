@@ -1,5 +1,8 @@
 #include "globals.h"
 
+/* takes a pointer to a pointer to a csv string */
+/* the pointer pointed to will be modified, but the data it points to will not */
+
 char *csv_read(char **ptr)
 {
     if(!ptr)

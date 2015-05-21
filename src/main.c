@@ -10,7 +10,6 @@ void quit_handler(struct player_t *player)
 
 int main(int argc, char *argv[])
 {
-    parse_args(argc, argv);
 
     atexit(cleanup);
 
@@ -23,7 +22,13 @@ int main(int argc, char *argv[])
     struct player_t *player = malloc(sizeof(struct player_t));
     memset(player, 0, sizeof(struct player_t));
 
-    player->cash.cents = 1000000 * 100;
+    uint args_status = parse_args(player, argc, argv);
+
+    if(args_status & ARG_FAILURE)
+        return EXIT_FAILURE;
+
+    if(args_status & ARG_LOADED)
+        player->cash.cents = 1000 * 100;
 
     while(1)
     {
@@ -33,7 +38,6 @@ int main(int argc, char *argv[])
             { "[P]rint portfolio", "print", print_handler },
             { "[U]pdate stock prices", "update", update_handler },
             { "Stock [i]nfo", "info", info_handler },
-            { "[H]elp", "help", help_handler },
             { "[W]rite portfolio", "write", save_handler },
             { "[L]oad portfolio", "load", load_handler },
 #ifndef NDEBUG
