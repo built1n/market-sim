@@ -69,6 +69,17 @@ uint8_t read_int8(FILE *f)
     return n;
 }
 
+/* this is SLOWWW, but who cares? :P */
+size_t ck_read(char *buf, size_t sz, size_t nmemb, FILE* f)
+{
+    for(size_t i = 0 ; i < sz * nmemb; ++i)
+    {
+        buf[i] = read_int8(f);
+    }
+
+    return nmemb;
+}
+
 void load_portfolio(struct player_t *player, const char *filename)
 {
     printf("Loading portfolio...\n");
@@ -84,7 +95,7 @@ void load_portfolio(struct player_t *player, const char *filename)
     FILE *f = fopen(filename, "rb");
 
     char magic[6];
-    if(!f || fread(magic, 1, sizeof(magic), f) != 6 || memcmp(magic, "PORTv2", sizeof(magic)) != 0)
+    if(!f || ck_read(magic, 1, sizeof(magic), f) != 6 || memcmp(magic, "PORTv2", sizeof(magic)) != 0)
     {
         printf("FATAL: Failed to load save.\n");
         exit(EXIT_FAILURE);
@@ -105,7 +116,7 @@ void load_portfolio(struct player_t *player, const char *filename)
 
         uint64_t symlen = read_be64(f);
         char *sym = malloc(symlen + 1);
-        if(fread(sym, symlen + 1, 1, f) != 1)
+        if(ck_read(sym, symlen + 1, 1, f) != 1)
         {
             printf("FATAL: Save is corrupted (symbol too short).\n");
             exit(EXIT_FAILURE);
