@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include <curl/curl.h>
 
@@ -22,6 +23,9 @@
 
 /* don't change this, it will corrupt existing saves */
 #define EPOCH_YEAR 2000
+
+#define SAVE_MAGIC "PORTv3"
+#define MAGIC_LEN 6
 
 typedef unsigned long long ullong;
 typedef unsigned long ulong;
@@ -87,6 +91,7 @@ char *csv_read(char**);
 char *read_string(void);
 char *read_ticker(void);
 int compare_stocks(const void*, const void*);
+void fail(const char*, ...);;
 struct stock_t *find_stock(struct player_t*, char*);
 uint parse_args(struct player_t*, int argc, char *argv[]);
 uint16_t to_be16(uint16_t);

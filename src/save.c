@@ -76,8 +76,7 @@ void save_handler(struct player_t *player)
 
     cksum = 0;
 
-    const char *magic = "PORTv2";
-    ck_write(magic, strlen(magic), 1, f);
+    ck_write(SAVE_MAGIC, strlen(SAVE_MAGIC), 1, f);
 
     write_be64(f, player->cash.cents);
 

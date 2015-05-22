@@ -114,8 +114,7 @@ static void detect_endianness(void)
         endianness = LITTLE;
     else
     {
-        printf("FATAL: failed to detect system endianness!\n");
-        exit(EXIT_FAILURE);
+        fail("failed to detect system endianness");
     }
 }
 
@@ -321,4 +320,17 @@ uint parse_args(struct player_t *player, int argc, char *argv[])
         load_portfolio(player, port_file);
 
     return ret;
+}
+
+void fail(const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    char buf[256];
+    vsnprintf(buf, sizeof(buf), fmt, ap);
+    va_end(ap);
+
+    fprintf(stderr, "FATAL: %s\n", buf);
+
+    exit(EXIT_FAILURE);
 }
