@@ -33,8 +33,8 @@ int main(int argc, char *argv[])
             { "[P]rint portfolio", "print", print_handler },
             { "[U]pdate stock prices", "update", update_handler },
             { "Stock [i]nfo", "info", info_handler },
-            { "[W]rite portfolio", "write", save_handler },
-            { "[L]oad portfolio", "load", load_handler },
+            { "[L]oad portfolio from disk", "load", load_handler },
+            { "[W]rite portfolio to disk", "write", save_handler },
             { "[Q]uit", "quit", quit_handler },
         };
 

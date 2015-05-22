@@ -80,39 +80,38 @@ struct command_t {
 };
 
 /*** prototypes ***/
-void cleanup(void);
+
+void do_menu(struct player_t*, const struct command_t*, uint len, const char *prompt);
+bool get_stock_info(char *sym, struct money_t*, char **name);
+char *csv_read(char**);
+char *read_string(void);
+char *read_ticker(void);
 int compare_stocks(const void*, const void*);
+struct stock_t *find_stock(struct player_t*, char*);
+uint parse_args(struct player_t*, int argc, char *argv[]);
+uint16_t to_be16(uint16_t);
+uint16_t to_sys16(uint16_t);
+uint32_t to_be32(uint32_t);
+uint32_t to_sys32(uint32_t);
+uint64_t to_be64(uint64_t);
+uint64_t to_sys64(uint64_t);
+ullong read_int(void);
+void add_hist(struct stock_t*, enum history_action, ullong count);
 void all_lower(char*);
 void all_upper(char*);
-bool get_stock_info(char *sym, struct money_t*, char **name);
-uint64_t to_sys64(uint64_t);
-uint64_t to_be64(uint64_t);
-uint32_t to_sys32(uint32_t);
-uint32_t to_be32(uint32_t);
-uint16_t to_sys16(uint16_t);
-uint16_t to_be16(uint16_t);
-struct stock_t *find_stock(struct player_t*, char*);
-void add_hist(struct stock_t*, enum history_action, ullong count);
+void cleanup(void);
+void load_portfolio(struct player_t*, const char*);
 void print_history(struct stock_t*);
-char *read_ticker(void);
-char *read_string(void);
-ullong read_int(void);
 void print_usage(int argc, char *argv[]);
 void print_version(void);
 
-uint parse_args(struct player_t*, int argc, char *argv[]);
-char *csv_read(char**);
-void load_portfolio(struct player_t*, const char*);
-
 void buy_handler(struct player_t*);
-void sell_handler(struct player_t*);
 void info_handler(struct player_t*);
-void update_handler(struct player_t*);
-void save_handler(struct player_t*);
 void load_handler(struct player_t*);
-void quit_handler(struct player_t*);
 void print_handler(struct player_t*);
-
-void do_menu(struct player_t*, const struct command_t*, uint len, const char *prompt);
+void quit_handler(struct player_t*);
+void save_handler(struct player_t*);
+void sell_handler(struct player_t*);
+void update_handler(struct player_t*);
 
 #endif

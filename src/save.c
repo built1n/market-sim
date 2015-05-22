@@ -1,9 +1,15 @@
 #include "globals.h"
 
-/* NOTE: integers are represented internally by long long ints, but in the save they are always 64 bits */
+/* NOTE: integers are represented internally as long long ints, but in the save they are always 64 bits */
+
+static uint64_t cksum;
+
+#define ADD_CKSUM(x) (cksum += (x*x) + 1)
 
 static bool write_be64(FILE *f, uint64_t n)
 {
+    ADD_CKSUM(n);
+
     n = to_be64(n);
     if(fwrite(&n, sizeof(n), 1, f) != 1)
         return false;
@@ -11,6 +17,16 @@ static bool write_be64(FILE *f, uint64_t n)
 }
 
 static bool write_be32(FILE *f, uint32_t n)
+{
+    ADD_CKSUM(n);
+
+    n = to_be32(n);
+    if(fwrite(&n, sizeof(n), 1, f) != 1)
+        return false;
+    return true;
+}
+
+static bool write_be32_noupdate(FILE *f, uint32_t n)
 {
     n = to_be32(n);
     if(fwrite(&n, sizeof(n), 1, f) != 1)
@@ -20,6 +36,8 @@ static bool write_be32(FILE *f, uint32_t n)
 
 static bool write_be16(FILE *f, uint16_t n)
 {
+    ADD_CKSUM(n);
+
     n = to_be16(n);
     if(fwrite(&n, sizeof(n), 1, f) != 1)
         return false;
@@ -28,6 +46,8 @@ static bool write_be16(FILE *f, uint16_t n)
 
 static bool write_int8(FILE *f, uint8_t n)
 {
+    ADD_CKSUM(n);
+
     if(fwrite(&n, sizeof(n), 1, f) != 1)
         return false;
     return true;
@@ -43,6 +63,8 @@ void save_handler(struct player_t *player)
     FILE *f = fopen(filename, "wb");
 
     free(filename);
+
+    cksum = 0;
 
     const char *magic = "PORTv2";
     fwrite(magic, strlen(magic), 1, f);
@@ -78,6 +100,8 @@ void save_handler(struct player_t *player)
 
             hist = hist->next;
         }
+
+        write_be32_noupdate(f, cksum);
     }
 
     fclose(f);

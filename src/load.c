@@ -4,12 +4,21 @@
 
 #define FAIL() exit(EXIT_FAILURE);
 
+static uint32_t cksum;
+
+#define ADD_CKSUM(x) (cksum += (x*x) + 1)
+
 uint64_t read_be64(FILE *f)
 {
     uint64_t n;
     if(fread(&n, sizeof(n), 1, f) != 1)
         FAIL();
-    return to_sys64(n);
+
+    n = to_sys64(n);
+
+    ADD_CKSUM(n);
+
+    return n;
 }
 
 uint32_t read_be32(FILE *f)
@@ -17,7 +26,23 @@ uint32_t read_be32(FILE *f)
     uint32_t n;
     if(fread(&n, sizeof(n), 1, f) != 1)
         FAIL();
-    return to_sys32(n);
+
+    n = to_sys32(n);
+
+    ADD_CKSUM(n);
+
+    return n;
+}
+
+uint32_t read_be32_nocheck(FILE *f)
+{
+    uint32_t n;
+    if(fread(&n, sizeof(n), 1, f) != 1)
+        FAIL();
+
+    n = to_sys32(n);
+
+    return n;
 }
 
 uint16_t read_be16(FILE *f)
@@ -25,7 +50,12 @@ uint16_t read_be16(FILE *f)
     uint16_t n;
     if(fread(&n, sizeof(n), 1, f) != 1)
         FAIL();
-    return to_sys16(n);
+
+    n = to_sys16(n);
+
+    ADD_CKSUM(n);
+
+    return n;
 }
 
 uint8_t read_int8(FILE *f)
@@ -33,6 +63,9 @@ uint8_t read_int8(FILE *f)
     uint8_t n;
     if(fread(&n, sizeof(n), 1, f) != 1)
         FAIL();
+
+    ADD_CKSUM(n);
+
     return n;
 }
 
@@ -45,6 +78,8 @@ void load_portfolio(struct player_t *player, const char *filename)
 
     player->portfolio_len = 0;
     player->portfolio = NULL;
+
+    cksum = 0;
 
     FILE *f = fopen(filename, "rb");
 
@@ -112,6 +147,15 @@ void load_portfolio(struct player_t *player, const char *filename)
                 hist = hist->next;
             }
         }
+
+        uint32_t ck = read_be32_nocheck(f);
+
+        if(ck != cksum)
+        {
+            printf("FATAL: bad checksum, file is corrupt.\n%d %d", ck, cksum);
+            exit(EXIT_FAILURE);
+        }
+
         int junk = fgetc(f);
         ungetc(junk, f);
 
