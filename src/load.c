@@ -2,11 +2,11 @@
 
 /* NOTE: integers are represented internally by unsigned long long ints, but in the save they are always 64 bits */
 
-#define FAIL() exit(EXIT_FAILURE);
-
 static uint32_t cksum;
 
 #define ADD_CKSUM(x) (cksum += (x*x) + 1)
+
+#define FAIL() fail("Failed to read from file.")
 
 uint64_t read_be64(FILE *f)
 {
@@ -94,11 +94,10 @@ void load_portfolio(struct player_t *player, const char *filename)
 
     FILE *f = fopen(filename, "rb");
 
-    char magic[6];
-    if(!f || ck_read(magic, 1, sizeof(magic), f) != 6 || memcmp(magic, "PORTv2", sizeof(magic)) != 0)
+    char magic[MAGIC_LEN];
+    if(!f || ck_read(magic, 1, sizeof(magic), f) != 6 || memcmp(magic, SAVE_MAGIC, sizeof(magic)) != 0)
     {
-        printf("FATAL: Failed to load save.\n");
-        exit(EXIT_FAILURE);
+        fail("Failed to load save.");
     }
 
     player->cash.cents = read_be64(f);
@@ -118,8 +117,7 @@ void load_portfolio(struct player_t *player, const char *filename)
         char *sym = malloc(symlen + 1);
         if(ck_read(sym, symlen + 1, 1, f) != 1)
         {
-            printf("FATAL: Save is corrupted (symbol too short).\n");
-            exit(EXIT_FAILURE);
+            fail("Save is corrupted (symbol too short).");
         }
 
         stock->symbol = sym;
@@ -163,8 +161,7 @@ void load_portfolio(struct player_t *player, const char *filename)
 
         if(ck != cksum)
         {
-            printf("FATAL: bad checksum, file is corrupt.\n%d %d", ck, cksum);
-            exit(EXIT_FAILURE);
+            fail("Bad checksum, file is corrupt.\nCalculated: %d File: %d", ck, cksum);
         }
 
         int junk = fgetc(f);
