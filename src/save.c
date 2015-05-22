@@ -53,6 +53,16 @@ static bool write_int8(FILE *f, uint8_t n)
     return true;
 }
 
+size_t ck_write(const char *buf, size_t sz, size_t nmemb, FILE *f)
+{
+    for(size_t i = 0 ; i < sz * nmemb; ++i)
+    {
+        write_int8(f, buf[i]);
+    }
+
+    return nmemb;
+}
+
 void save_handler(struct player_t *player)
 {
     printf("Enter the file to save your portfolio in: ");
@@ -67,7 +77,7 @@ void save_handler(struct player_t *player)
     cksum = 0;
 
     const char *magic = "PORTv2";
-    fwrite(magic, strlen(magic), 1, f);
+    ck_write(magic, strlen(magic), 1, f);
 
     write_be64(f, player->cash.cents);
 
@@ -77,7 +87,7 @@ void save_handler(struct player_t *player)
 
         write_be64(f, strlen(stock->symbol));
 
-        fwrite(stock->symbol, strlen(stock->symbol) + 1, 1, f);
+        ck_write(stock->symbol, strlen(stock->symbol) + 1, 1, f);
 
         write_be64(f, stock->count);
 
