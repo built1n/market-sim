@@ -41,6 +41,11 @@ int main(int argc, char *argv[])
     else
         player->cash.cents = 1000 * 100;
 
+    if(args_status & ARG_VERBOSE)
+    {
+        output("Verbose operation enabled.\n");
+    }
+
     while(1)
     {
         const struct command_t commands[] = {

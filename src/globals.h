@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
 #include <curl/curl.h>
 #include <ncurses.h>
@@ -90,7 +92,7 @@ struct command_t {
 
 extern bool have_color;
 
-void do_menu(struct player_t*, const struct command_t*, uint len, const char *prompt);
+void do_menu(struct player_t*, const struct command_t*, uint, const char*);
 bool get_stock_info(char *sym, struct money_t*, char **name);
 char *csv_read(char**);
 char *(*read_string)(void);
