@@ -38,6 +38,8 @@ int main(int argc, char *argv[])
     if(!args_status & ARG_LOADED)
         player->cash.cents = 1000 * 100;
 
+    heading("Market Simulator " PROGRAM_VERSION);
+
     while(1)
     {
         const struct command_t commands[] = {
