@@ -396,6 +396,7 @@ void horiz_line_nocurses(void)
 {
     for(int i = 0; i < 80; ++i)
         output("=");
+    output("\n");
 }
 
 void (*horiz_line)(void) = horiz_line_nocurses;
@@ -444,6 +445,7 @@ void heading_nocurses(const char *fmt, ...)
     output(" ");
     for(int i = 0; i < 40 - len - 1 - d; ++i)
         output("=");
+    output("\n");
 }
 
 void (*heading)(const char*, ...) = heading_nocurses;
