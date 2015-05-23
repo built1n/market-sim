@@ -17,7 +17,7 @@
 #define ARRAYLEN(x) (sizeof(x) / sizeof(x[0]))
 
 /* VERSION_INFO is supplied by the compiler */
-#define PROGRAM_VERSION "prerelease (" VERSION_INFO ")"
+#define PROGRAM_VERSION "v0.1 (" VERSION_INFO ")"
 
 #define ARG_LOADED (1<<0)
 #define ARG_FAILURE (1<<1)
