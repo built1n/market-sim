@@ -13,15 +13,19 @@ int main(int argc, char *argv[])
 
     curl_global_init(CURL_GLOBAL_DEFAULT);
 
-    atexit(cleanup);
-
     initscr();
     echo();
     nocbreak();
     nl();
     scrollok(stdscr, true);
 
-    atexit(endwin);
+    atexit(cleanup);
+
+    const struct sigaction handler = {
+        .sa_handler = sig_handler
+    };
+
+    sigaction(SIGINT, &handler, NULL);
 
     struct player_t *player = malloc(sizeof(struct player_t));
     memset(player, 0, sizeof(struct player_t));

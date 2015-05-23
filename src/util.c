@@ -6,6 +6,13 @@
 void cleanup(void)
 {
     curl_global_cleanup();
+    endwin();
+}
+
+void sig_handler(int sig)
+{
+    cleanup();
+    exit(EXIT_FAILURE);
 }
 
 struct data_buffer_t {

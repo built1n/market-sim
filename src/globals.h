@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include <ctype.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -110,6 +111,7 @@ void load_portfolio(struct player_t*, const char*);
 void print_history(struct stock_t*);
 void print_usage(int argc, char *argv[]);
 void print_version(void);
+void sig_handler(int);
 int output(const char*, ...);
 
 void buy_handler(struct player_t*);
