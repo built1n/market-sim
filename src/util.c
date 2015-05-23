@@ -11,6 +11,7 @@ void cleanup(void)
 
 void sig_handler(int sig)
 {
+    (void) sig;
     cleanup();
     exit(EXIT_FAILURE);
 }
@@ -190,7 +191,7 @@ struct stock_t *find_stock(struct player_t *player, char *sym)
 void print_handler(struct player_t *player)
 {
     output("Your portfolio:\n");
-    output("================================================================================\n");
+    horiz_line();
 
     ullong portfolio_value = 0;
 
@@ -214,7 +215,7 @@ void print_handler(struct player_t *player)
             }
         }
     }
-    output("================================================================================\n");
+    horiz_line();
 
     output("Portfolio value: $%llu.%02llu\n", portfolio_value / 100, portfolio_value % 100);
 
@@ -366,4 +367,26 @@ int output(const char *fmt, ...)
     va_end(ap);
 
     return ret;
+}
+
+void horiz_line(void)
+{
+    for(int i = 0; i < getmaxx(stdscr); ++i)
+    {
+        output("=");
+    }
+}
+
+void heading(const char *text)
+{
+    int len = strlen(text) / 2;
+    int beg_x = getmaxx(stdscr) / 2 - len;
+
+    for(int i = 0; i < beg_x - 1; ++i)
+        output("=");
+    output(" ");
+    output(text);
+    output(" ");
+    for(int i = 0; i < getmaxx(stdscr) - getmaxx(stdscr) / 2 - len - 1; ++i)
+        output("=");
 }

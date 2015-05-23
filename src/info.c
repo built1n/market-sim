@@ -26,9 +26,8 @@ void info_handler(struct player_t *player)
 
 
     output("Transaction history for '%s':\n", stock->symbol);
-    output("================================================================================\n");
+    horiz_line();
     print_history(stock);
-    output("================================================================================\n");
-
+    horiz_line();
     output("Current price: $%llu.%02llu\n", stock->current_price.cents / 100, stock->current_price.cents % 100);
 }
