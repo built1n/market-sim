@@ -190,8 +190,7 @@ struct stock_t *find_stock(struct player_t *player, char *sym)
 
 void print_handler(struct player_t *player)
 {
-    output("Your portfolio:\n");
-    horiz_line();
+    heading("Your Portfolio");
 
     ullong portfolio_value = 0;
 
@@ -377,16 +376,25 @@ void horiz_line(void)
     }
 }
 
-void heading(const char *text)
+void heading(const char *fmt, ...)
 {
+    char text[128];
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(text, sizeof(text), fmt, ap);
+    va_end(ap);
+
     int len = strlen(text) / 2;
     int beg_x = getmaxx(stdscr) / 2 - len;
+    int d = 0;
+    if(strlen(text) & 1)
+        d++;
 
     for(int i = 0; i < beg_x - 1; ++i)
         output("=");
     output(" ");
     output(text);
     output(" ");
-    for(int i = 0; i < getmaxx(stdscr) - getmaxx(stdscr) / 2 - len - 1; ++i)
+    for(int i = 0; i < getmaxx(stdscr) - getmaxx(stdscr) / 2 - len - 1 - d; ++i)
         output("=");
 }

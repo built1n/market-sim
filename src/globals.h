@@ -113,8 +113,9 @@ void print_usage(int argc, char *argv[]);
 void print_version(void);
 void sig_handler(int);
 int output(const char*, ...);
-void heading(const char *text);
+void heading(const char *text, ...);
 void horiz_line(void);
+
 
 void buy_handler(struct player_t*);
 void info_handler(struct player_t*);
