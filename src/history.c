@@ -55,12 +55,18 @@ void print_history(struct stock_t *stock)
         switch(hist->action)
         {
         case BUY:
-            output("[BUY]  %llu shares for $%llu.%02llu each (+$%llu.%02llu).\n", hist->count, hist->price.cents / 100, hist->price.cents % 100,
-                   total / 100, total % 100);
+            output("[BUY]  %llu shares for $%llu.%02llu each (", hist->count, hist->price.cents / 100, hist->price.cents % 100);
+            use_color(COL_GREEN);
+            output("+$%llu.%02llu", total / 100, total % 100);
+            stop_color(COL_GREEN);
+            output(").\n");
             break;
         case SELL:
-            output("[SELL] %llu shares for $%llu.%02llu each (-$%llu.%02llu).\n", hist->count, hist->price.cents / 100, hist->price.cents % 100,
-                   total / 100, total % 100);
+            output("[SELL] %llu shares for $%llu.%02llu each (", hist->count, hist->price.cents / 100, hist->price.cents % 100);
+            use_color(COL_RED);
+            output("-$%llu.%02llu", total / 100, total % 100);
+            stop_color(COL_RED);
+            output(").\n");
             break;
         default:
             output("unknown history enum (%d).\n", hist->action);

@@ -279,10 +279,9 @@ void update_handler(struct player_t *player)
     }
 }
 
-uint parse_args(struct player_t *player, int argc, char *argv[])
+uint parse_args(struct player_t *player, int argc, char *argv[], char **port_file)
 {
     uint ret = 0;
-    char *port_file = NULL;
 
     for(int i = 1; i < argc; ++i)
     {
@@ -318,7 +317,7 @@ uint parse_args(struct player_t *player, int argc, char *argv[])
             {
                 if(!(ret & ARG_LOADED))
                 {
-                    port_file = arg;
+                    *port_file = arg;
                     ret |= ARG_LOADED;
                 }
                 else
@@ -335,9 +334,6 @@ uint parse_args(struct player_t *player, int argc, char *argv[])
     if(ret & ARG_FAILURE)
         return ret;
 
-    if(port_file)
-        load_portfolio(player, port_file);
-
     return ret;
 }
 
@@ -348,13 +344,14 @@ void fail(const char *fmt, ...)
     char buf[256];
     vsnprintf(buf, sizeof(buf), fmt, ap);
     va_end(ap);
+    cleanup();
 
-    output("FATAL: %s\n", buf);
+    fprintf(stdout, "FATAL: %s\n", buf);
 
     exit(EXIT_FAILURE);
 }
 
-int output(const char *fmt, ...)
+int curses_printf(const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
@@ -366,6 +363,34 @@ int output(const char *fmt, ...)
     va_end(ap);
 
     return ret;
+}
+
+int (*output)(const char*, ...) = printf;
+
+void curses_init(void)
+{
+    initscr();
+    echo();
+    nocbreak();
+    nl();
+    scrollok(stdscr, true);
+    output = curses_printf;
+
+    if(has_colors())
+    {
+        have_color = true;
+        start_color();
+        attron(A_BOLD);
+        init_color(COLOR_WHITE, 1000, 1000, 1000);
+        init_pair(0, COLOR_WHITE, COLOR_BLACK);
+        init_pair(1, COLOR_RED, COLOR_BLACK);
+        init_pair(2, COLOR_GREEN, COLOR_BLACK);
+        use_color(COL_NORM);
+    }
+    else
+    {
+        have_color = false;
+    }
 }
 
 void horiz_line(void)
@@ -397,4 +422,22 @@ void heading(const char *fmt, ...)
     output(" ");
     for(int i = 0; i < getmaxx(stdscr) - getmaxx(stdscr) / 2 - len - 1 - d; ++i)
         output("=");
+}
+
+bool have_color = false;
+
+void use_color(int col)
+{
+    if(have_color)
+    {
+        attron(COLOR_PAIR(col));
+    }
+}
+
+void stop_color(int col)
+{
+    if(have_color)
+    {
+        attroff(COLOR_PAIR(col));
+    }
 }
