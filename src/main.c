@@ -21,6 +21,8 @@ int main(int argc, char *argv[])
 
     atexit(cleanup);
 
+    heading("Market Simulator " PROGRAM_VERSION);
+
     const struct sigaction handler = {
         .sa_handler = sig_handler
     };
@@ -37,8 +39,6 @@ int main(int argc, char *argv[])
 
     if(!args_status & ARG_LOADED)
         player->cash.cents = 1000 * 100;
-
-    heading("Market Simulator " PROGRAM_VERSION);
 
     while(1)
     {
