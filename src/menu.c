@@ -4,10 +4,10 @@ void do_menu(struct player_t *player, const struct command_t *commands, uint len
 {
     for(uint i = 0; i < len; ++i)
     {
-        printf("%d. %s\n", i + 1, commands[i].name);
+        output("%d. %s\n", i + 1, commands[i].name);
     }
 
-    printf("%s", prompt);
+    output("%s", prompt);
     char *cmdbuf = read_string();
 
     all_lower(cmdbuf);
@@ -64,7 +64,7 @@ exec_cmd:
     if(best_command >= 0)
     {
         commands[best_command].handler(player);
-        printf("\n");
+        output("\n");
     }
 
     free(cmdbuf);

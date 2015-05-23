@@ -3,32 +3,32 @@
 void info_handler(struct player_t *player)
 {
     char *sym;
-    printf("Enter the ticker symbol of the stock to get information for: ");
+    output("Enter the ticker symbol of the stock to get information for: ");
     sym = read_ticker();
 
     struct stock_t *stock = find_stock(player, sym);
 
     if(!stock)
     {
-        printf("Couldn't find '%s' in portfolio.\n", sym);
+        output("Couldn't find '%s' in portfolio.\n", sym);
         free(sym);
         return;
     }
 
-    printf("Updating price data...\n");
+    output("Updating price data...\n");
     if(!get_stock_info(sym, &stock->current_price, &stock->fullname))
     {
-        printf("Failed to update prices.\n");
+        output("Failed to update prices.\n");
         return;
     }
 
     free(sym);
 
 
-    printf("Transaction history for '%s':\n", stock->symbol);
-    printf("================================================================================\n");
+    output("Transaction history for '%s':\n", stock->symbol);
+    output("================================================================================\n");
     print_history(stock);
-    printf("================================================================================\n");
+    output("================================================================================\n");
 
-    printf("Current price: $%llu.%02llu\n", stock->current_price.cents / 100, stock->current_price.cents % 100);
+    output("Current price: $%llu.%02llu\n", stock->current_price.cents / 100, stock->current_price.cents % 100);
 }

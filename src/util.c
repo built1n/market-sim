@@ -67,7 +67,7 @@ bool get_stock_info(char *symbol, struct money_t *price, char **name_ret)
 
     if(res != CURLE_OK || buf.data[0] != '"')
     {
-        printf("Failed querying information for '%s'.\n", symbol);
+        output("Failed querying information for '%s'.\n", symbol);
         return false;
     }
 
@@ -182,14 +182,14 @@ struct stock_t *find_stock(struct player_t *player, char *sym)
 
 void print_handler(struct player_t *player)
 {
-    printf("Your portfolio:\n");
-    printf("================================================================================\n");
+    output("Your portfolio:\n");
+    output("================================================================================\n");
 
     ullong portfolio_value = 0;
 
     if(player->portfolio_len == 0)
     {
-        printf(" < EMPTY >\n");
+        output(" < EMPTY >\n");
     }
     else
     {
@@ -199,7 +199,7 @@ void print_handler(struct player_t *player)
             if(stock->count)
             {
                 ullong total_value = stock->count * stock->current_price.cents;
-                printf("%6s %40s %5llu  * $%5llu.%02llu = $%6llu.%02llu\n",
+                output("%6s %40s %5llu  * $%5llu.%02llu = $%6llu.%02llu\n",
                        stock->symbol, stock->fullname, stock->count, stock->current_price.cents / 100, stock->current_price.cents % 100,
                        total_value / 100, total_value % 100);
 
@@ -207,24 +207,36 @@ void print_handler(struct player_t *player)
             }
         }
     }
-    printf("================================================================================\n");
+    output("================================================================================\n");
 
-    printf("Portfolio value: $%llu.%02llu\n", portfolio_value / 100, portfolio_value % 100);
+    output("Portfolio value: $%llu.%02llu\n", portfolio_value / 100, portfolio_value % 100);
 
-    printf("Cash balance: $%llu.%02llu\n", player->cash.cents / 100, player->cash.cents % 100);
+    output("Cash balance: $%llu.%02llu\n", player->cash.cents / 100, player->cash.cents % 100);
 
     ullong total = portfolio_value + player->cash.cents;
 
-    printf("Total capital: $%llu.%02llu\n", total / 100, total % 100);
+    output("Total capital: $%llu.%02llu\n", total / 100, total % 100);
 }
 
 char *read_string(void)
 {
-    char *ret = NULL;
-    size_t len = 0;
-    len = getline(&ret, &len, stdin);
-    if(len)
-        ret[len - 1] = '\0';
+    char *ret = malloc(1);
+    size_t len = 1;
+
+    ret[0] = '\0';
+
+    char c;
+    do {
+        c = getch();
+        if(c != '\b' && c != '\n')
+        {
+            ++len;
+            ret = realloc(ret, len);
+            ret[len - 1] = '\0';
+            ret[len - 2] = c;
+        }
+    } while(c != '\n');
+
     return ret;
 }
 
@@ -248,13 +260,13 @@ ullong read_int(void)
 
 void update_handler(struct player_t *player)
 {
-    printf("Updating stock prices...\n");
+    output("Updating stock prices...\n");
     for(uint i = 0; i < player->portfolio_len; ++i)
     {
         struct stock_t *stock = player->portfolio + i;
         if(stock->count > 0)
         {
-            printf("%s...\n", stock->symbol);
+            output("%s...\n", stock->symbol);
             get_stock_info(stock->symbol, &stock->current_price, &stock->fullname);
         }
     }
@@ -304,7 +316,7 @@ uint parse_args(struct player_t *player, int argc, char *argv[])
                 }
                 else
                 {
-                    printf("FATAL: multiple portfolio files specified.\n");
+                    output("FATAL: multiple portfolio files specified.\n");
                     ret |= ARG_FAILURE;
                     break;
                 }
@@ -330,7 +342,21 @@ void fail(const char *fmt, ...)
     vsnprintf(buf, sizeof(buf), fmt, ap);
     va_end(ap);
 
-    fprintf(stderr, "FATAL: %s\n", buf);
+    output("FATAL: %s\n", buf);
 
     exit(EXIT_FAILURE);
+}
+
+int output(const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+
+    int ret = vwprintw(stdscr, fmt, ap);
+
+    refresh();
+
+    va_end(ap);
+
+    return ret;
 }

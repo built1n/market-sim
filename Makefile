@@ -7,11 +7,13 @@ GIT_VERSION := $(shell git describe --abbrev=8 --dirty --always --tags)
 
 CFLAGS = -Isrc/ -O2 -g -Wall -Wextra -std=gnu99 -fsanitize=address -DVERSION_INFO=\"$(GIT_VERSION)\"
 
+LIBS = -lcurl -lcurses
+
 HEADERS := $(wildcard src/*.h)
 
 market-sim: $(OBJ) Makefile $(HEADERS)
 	@echo "LD $@"
-	@$(CC) $(OBJ) -o $@ $(CFLAGS) -lcurl
+	@$(CC) $(OBJ) -o $@ $(CFLAGS) $(LIBS)
 
 %.o: %.c Makefile $(HEADERS)
 	@echo "CC $<"

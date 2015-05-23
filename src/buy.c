@@ -2,31 +2,31 @@
 
 void buy_handler(struct player_t *player)
 {
-    printf("Enter the ticker symbol of the stock you wish to purchase: ");
+    output("Enter the ticker symbol of the stock you wish to purchase: ");
     char *sym = read_ticker();
 
     struct money_t price;
 
-    printf("Getting stock information...\n");
+    output("Getting stock information...\n");
 
     char *name;
 
     if(!get_stock_info(sym, &price, &name))
     {
-        printf("Failed to get query information for '%s'.\n", sym);
+        output("Failed to get query information for '%s'.\n", sym);
         free(sym);
         return;
     }
 
-    printf("Stock name: %s\n", name);
-    printf("Price per share: $%llu.%02llu\n", price.cents / 100, price.cents % 100);
-    printf("Enter the number of shares to be purchased (maximum %llu): ", player->cash.cents / price.cents);
+    output("Stock name: %s\n", name);
+    output("Price per share: $%llu.%02llu\n", price.cents / 100, price.cents % 100);
+    output("Enter the number of shares to be purchased (maximum %llu): ", player->cash.cents / price.cents);
 
     ullong count = read_int();
 
     if(count <= 0)
     {
-        printf("Purchase cancelled.\n");
+        output("Purchase cancelled.\n");
         return;
     }
 
@@ -34,17 +34,17 @@ void buy_handler(struct player_t *player)
 
     if(cost > player->cash.cents)
     {
-        printf("Not enough money!\n");
+        output("Not enough money!\n");
         return;
     }
 
-    printf("This will cost $%llu.%02llu. Are you sure? ", cost / 100, cost % 100);
+    output("This will cost $%llu.%02llu. Are you sure? ", cost / 100, cost % 100);
     char *response = read_string();
     all_lower(response);
 
     if(response[0] == 'y')
     {
-        printf("Confirmed.\n");
+        output("Confirmed.\n");
 
         struct stock_t *stock = find_stock(player, sym);
 
@@ -82,7 +82,7 @@ void buy_handler(struct player_t *player)
     }
     else
     {
-        printf("Not confirmed.\n");
+        output("Not confirmed.\n");
     }
 
     free(response);
