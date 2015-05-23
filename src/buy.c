@@ -19,8 +19,10 @@ void buy_handler(struct player_t *player)
     }
 
     output("Stock name: %s\n", name);
-    output("Price per share: $%llu.%02llu\n", price.cents / 100, price.cents % 100);
-    output("Enter the number of shares to be purchased (maximum %llu): ", player->cash.cents / price.cents);
+    output("Price per share: $%llu.%02llu\n",
+           price.cents / 100, price.cents % 100);
+    output("Enter the number of shares to be purchased (maximum %llu): ",
+           player->cash.cents / price.cents);
 
     ullong count = read_int();
 
@@ -38,7 +40,8 @@ void buy_handler(struct player_t *player)
         return;
     }
 
-    output("This will cost $%llu.%02llu. Are you sure? ", cost / 100, cost % 100);
+    output("This will cost $%llu.%02llu. Are you sure? ",
+           cost / 100, cost % 100);
     char *response = read_string();
     all_lower(response);
 
@@ -60,7 +63,8 @@ void buy_handler(struct player_t *player)
             /* stock is not in portfolio yet, add it */
 
             player->portfolio_len += 1;
-            player->portfolio = realloc(player->portfolio, player->portfolio_len * sizeof(struct stock_t));
+            player->portfolio = realloc(player->portfolio,
+                                        player->portfolio_len * sizeof(struct stock_t));
             player->need_to_free_portfolio = true;
 
             stock = player->portfolio + player->portfolio_len - 1;
@@ -78,7 +82,9 @@ void buy_handler(struct player_t *player)
         add_hist(stock, BUY, count);
 
         /* sort the portfolio alphabetically by ticker symbol */
-        qsort(player->portfolio, player->portfolio_len, sizeof(struct stock_t), compare_stocks);
+        qsort(player->portfolio,
+              player->portfolio_len, sizeof(struct stock_t),
+              compare_stocks);
     }
     else
     {

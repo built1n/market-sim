@@ -54,6 +54,7 @@ int main(int argc, char *argv[])
             { "[Q]uit", "quit", quit_handler },
         };
 
-        do_menu(player, commands, ARRAYLEN(commands), "What would you like to do? ");
+        do_menu(player, commands, ARRAYLEN(commands),
+                "What would you like to do? ");
     }
 }
