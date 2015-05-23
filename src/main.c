@@ -10,18 +10,19 @@ void quit_handler(struct player_t *player)
 
 int main(int argc, char *argv[])
 {
-
     curl_global_init(CURL_GLOBAL_DEFAULT);
 
-    initscr();
-    echo();
-    nocbreak();
-    nl();
-    scrollok(stdscr, true);
+    struct player_t *player = malloc(sizeof(struct player_t));
+    memset(player, 0, sizeof(struct player_t));
+
+    char *save_file;
+    char **save_file_p = &save_file;
+
+    uint args_status = parse_args(player, argc, argv, save_file_p);
+
+    curses_init();
 
     atexit(cleanup);
-
-    heading("Market Simulator " PROGRAM_VERSION);
 
     const struct sigaction handler = {
         .sa_handler = sig_handler
@@ -29,15 +30,14 @@ int main(int argc, char *argv[])
 
     sigaction(SIGINT, &handler, NULL);
 
-    struct player_t *player = malloc(sizeof(struct player_t));
-    memset(player, 0, sizeof(struct player_t));
-
-    uint args_status = parse_args(player, argc, argv);
+    heading("Market Simulator " PROGRAM_VERSION);
 
     if(args_status & ARG_FAILURE)
         return EXIT_FAILURE;
 
-    if(!args_status & ARG_LOADED)
+    if(args_status & ARG_LOADED)
+        load_portfolio(player, save_file);
+    else
         player->cash.cents = 1000 * 100;
 
     while(1)

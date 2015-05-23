@@ -87,6 +87,8 @@ struct command_t {
 
 /*** prototypes ***/
 
+extern bool have_color;
+
 void do_menu(struct player_t*, const struct command_t*, uint len, const char *prompt);
 bool get_stock_info(char *sym, struct money_t*, char **name);
 char *csv_read(char**);
@@ -95,7 +97,7 @@ char *read_ticker(void);
 int compare_stocks(const void*, const void*);
 void fail(const char*, ...);;
 struct stock_t *find_stock(struct player_t*, char*);
-uint parse_args(struct player_t*, int argc, char *argv[]);
+uint parse_args(struct player_t*, int argc, char *argv[], char**);
 uint16_t to_be16(uint16_t);
 uint16_t to_sys16(uint16_t);
 uint32_t to_be32(uint32_t);
@@ -112,10 +114,15 @@ void print_history(struct stock_t*);
 void print_usage(int argc, char *argv[]);
 void print_version(void);
 void sig_handler(int);
-int output(const char*, ...);
+extern int (*output)(const char*, ...);
 void heading(const char *text, ...);
 void horiz_line(void);
+#define COL_NORM 0
+#define COL_RED 1
+#define COL_GREEN 2
 
+void use_color(int);
+void stop_color(int);
 
 void buy_handler(struct player_t*);
 void info_handler(struct player_t*);
