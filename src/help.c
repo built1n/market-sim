@@ -9,6 +9,7 @@ void print_usage(int argc, char *argv[])
 
     output("Options:\n");
     output(" -h, --help\tShow this help and exit\n");
+    output("     --nocurses\tOperate without curses\n");
     output(" -v, --verbose\tEnable verbose operation\n");
     output("     --version\tOutput version information and exit\n");
 }
