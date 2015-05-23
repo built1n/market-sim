@@ -10,9 +10,18 @@ void quit_handler(struct player_t *player)
 
 int main(int argc, char *argv[])
 {
-    atexit(cleanup);
 
     curl_global_init(CURL_GLOBAL_DEFAULT);
+
+    atexit(cleanup);
+
+    initscr();
+    echo();
+    nocbreak();
+    nl();
+    scrollok(stdscr, true);
+
+    atexit(endwin);
 
     struct player_t *player = malloc(sizeof(struct player_t));
     memset(player, 0, sizeof(struct player_t));

@@ -11,6 +11,7 @@
 #include <stdarg.h>
 
 #include <curl/curl.h>
+#include <ncurses.h>
 
 #define ARRAYLEN(x) (sizeof(x) / sizeof(x[0]))
 
@@ -109,6 +110,7 @@ void load_portfolio(struct player_t*, const char*);
 void print_history(struct stock_t*);
 void print_usage(int argc, char *argv[]);
 void print_version(void);
+int output(const char*, ...);
 
 void buy_handler(struct player_t*);
 void info_handler(struct player_t*);

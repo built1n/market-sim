@@ -65,11 +65,11 @@ size_t ck_write(const char *buf, size_t sz, size_t nmemb, FILE *f)
 
 void save_handler(struct player_t *player)
 {
-    printf("Enter the file to save your portfolio in: ");
+    output("Enter the file to save your portfolio in: ");
 
     char *filename = read_string();
 
-    printf("Writing data...\n");
+    output("Writing data...\n");
     FILE *f = fopen(filename, "wb");
 
     free(filename);
@@ -115,5 +115,5 @@ void save_handler(struct player_t *player)
 
     fclose(f);
 
-    printf("Done saving.\n");
+    output("Done saving.\n");
 }

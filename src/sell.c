@@ -2,10 +2,10 @@
 
 void sell_handler(struct player_t *player)
 {
-    printf("Enter the ticker symbol of the stock you wish to sell: ");
+    output("Enter the ticker symbol of the stock you wish to sell: ");
     char *sym = read_ticker();
 
-    printf("Getting stock information...\n");
+    output("Getting stock information...\n");
 
     struct stock_t *stock = NULL;
 
@@ -13,38 +13,38 @@ void sell_handler(struct player_t *player)
 
     if(!stock)
     {
-        printf("Couldn't find '%s' in portfolio.\n", sym);
+        output("Couldn't find '%s' in portfolio.\n", sym);
         free(sym);
         return;
     }
 
     free(sym);
 
-    printf("Updating prices...\n");
+    output("Updating prices...\n");
 
     get_stock_info(stock->symbol, &stock->current_price, &stock->fullname);
 
-    printf("You currently own %llu share(s) of '%s' (%s) valued at $%llu.%02llu each.\n",
+    output("You currently own %llu share(s) of '%s' (%s) valued at $%llu.%02llu each.\n",
            stock->count, stock->fullname, stock->symbol, stock->current_price.cents / 100, stock->current_price.cents % 100);
 
-    printf("How many shares do you wish to sell? ");
+    output("How many shares do you wish to sell? ");
     ullong sell_count = read_int();
 
     if(!sell_count)
     {
-        printf("Sale cancelled.\n");
+        output("Sale cancelled.\n");
         return;
     }
 
     if(stock->count < sell_count)
     {
-        printf("You don't own enough shares!\n");
+        output("You don't own enough shares!\n");
         return;
     }
 
     ullong sell_total = stock->current_price.cents * sell_count;
 
-    printf("This will sell %llu share(s) for $%llu.%02llu total.\nProceed? ", sell_count, sell_total / 100, sell_total % 100);
+    output("This will sell %llu share(s) for $%llu.%02llu total.\nProceed? ", sell_count, sell_total / 100, sell_total % 100);
 
     char *response = read_string();
 
@@ -67,11 +67,11 @@ void sell_handler(struct player_t *player)
 
         add_hist(stock, SELL, sell_count);
 
-        printf("%llu share(s) sold for $%llu.%02llu total.\n", sell_count, sell_total / 100, sell_total % 100);
+        output("%llu share(s) sold for $%llu.%02llu total.\n", sell_count, sell_total / 100, sell_total % 100);
     }
     else
     {
-        printf("Not confirmed.\n");
+        output("Not confirmed.\n");
     }
 
     free(response);

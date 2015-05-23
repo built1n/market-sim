@@ -82,7 +82,7 @@ size_t ck_read(char *buf, size_t sz, size_t nmemb, FILE* f)
 
 void load_portfolio(struct player_t *player, const char *filename)
 {
-    printf("Loading portfolio...\n");
+    output("Loading portfolio...\n");
 
     if(player->need_to_free_portfolio)
         free(player->portfolio);
@@ -174,7 +174,7 @@ void load_portfolio(struct player_t *player, const char *filename)
 
 void load_handler(struct player_t *player)
 {
-    printf("Enter the file to load portfolio from: ");
+    output("Enter the file to load portfolio from: ");
     char *filename = read_string();
 
     load_portfolio(player, filename);

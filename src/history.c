@@ -49,21 +49,21 @@ void print_history(struct stock_t *stock)
     {
         ullong total = hist->count * hist->price.cents;
 
-        printf("[%d-%d-%d %d:%02d:%02d] ", hist->action_time.year + EPOCH_YEAR, hist->action_time.month + 1, hist->action_time.day + 1,
+        output("[%d-%d-%d %d:%02d:%02d] ", hist->action_time.year + EPOCH_YEAR, hist->action_time.month + 1, hist->action_time.day + 1,
                hist->action_time.hour, hist->action_time.minute, hist->action_time.second);
 
         switch(hist->action)
         {
         case BUY:
-            printf("[BUY]  %llu shares for $%llu.%02llu each (+$%llu.%02llu).\n", hist->count, hist->price.cents / 100, hist->price.cents % 100,
+            output("[BUY]  %llu shares for $%llu.%02llu each (+$%llu.%02llu).\n", hist->count, hist->price.cents / 100, hist->price.cents % 100,
                    total / 100, total % 100);
             break;
         case SELL:
-            printf("[SELL] %llu shares for $%llu.%02llu each (-$%llu.%02llu).\n", hist->count, hist->price.cents / 100, hist->price.cents % 100,
+            output("[SELL] %llu shares for $%llu.%02llu each (-$%llu.%02llu).\n", hist->count, hist->price.cents / 100, hist->price.cents % 100,
                    total / 100, total % 100);
             break;
         default:
-            printf("unknown history enum (%d).\n", hist->action);
+            output("unknown history enum (%d).\n", hist->action);
             break;
         }
         hist = hist->next;
