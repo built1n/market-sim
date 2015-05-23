@@ -5,7 +5,7 @@ OBJ := $(SRC:.c=.o)
 
 GIT_VERSION := $(shell git describe --abbrev=8 --dirty --always --tags)
 
-CFLAGS = -Isrc/ -O2 -g -Wall -Wextra -std=gnu99 -fsanitize=address -DVERSION_INFO=\"$(GIT_VERSION)\"
+CFLAGS = -Isrc/ -O2 -g -Wall -Wextra -std=gnu99 -DVERSION_INFO=\"$(GIT_VERSION)\"
 
 LIBS = -lcurl -lcurses
 
