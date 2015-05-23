@@ -394,7 +394,9 @@ void horiz_line_curses(void)
 
 void horiz_line_nocurses(void)
 {
-    for(int i = 0; i < 80; ++i)
+    struct winsize sz;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &sz);
+    for(int i = 0; i < sz.ws_col; ++i)
         output("=");
     output("\n");
 }
@@ -432,8 +434,11 @@ void heading_nocurses(const char *fmt, ...)
     vsnprintf(text, sizeof(text), fmt, ap);
     va_end(ap);
 
+    struct winsize w;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+
     int len = strlen(text) / 2;
-    int beg_x = 40 - len;
+    int beg_x = w.ws_col / 2 - len;
     int d = 0;
     if(strlen(text) & 1)
         d++;
@@ -443,7 +448,7 @@ void heading_nocurses(const char *fmt, ...)
     output(" ");
     output(text);
     output(" ");
-    for(int i = 0; i < 40 - len - 1 - d; ++i)
+    for(int i = 0; i < w.ws_col / 2 - len - 1 - d; ++i)
         output("=");
     output("\n");
 }
