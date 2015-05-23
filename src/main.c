@@ -18,9 +18,10 @@ int main(int argc, char *argv[])
     char *save_file;
     char **save_file_p = &save_file;
 
-    uint args_status = parse_args(player, argc, argv, save_file_p);
+    uint args_status = parse_args(argc, argv, save_file_p);
 
-    curses_init();
+    if(!(args_status & ARG_NOCURSES))
+        curses_init();
 
     atexit(cleanup);
 

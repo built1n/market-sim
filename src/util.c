@@ -225,7 +225,7 @@ void print_handler(struct player_t *player)
     output("Total capital: $%llu.%02llu\n", total / 100, total % 100);
 }
 
-char *read_string(void)
+static char *read_string_curses(void)
 {
     char *ret = malloc(1);
     size_t len = 1;
@@ -246,6 +246,19 @@ char *read_string(void)
 
     return ret;
 }
+
+static char *read_string_nocurses(void)
+{
+    char *ret = NULL;
+    size_t len = 0;
+
+    len = getline(&ret, &len, stdin);
+    if(len)
+        ret[len - 1] = '\0';
+    return ret;
+}
+
+char* (*read_string)(void) = read_string_nocurses;
 
 char *read_ticker(void)
 {
@@ -279,7 +292,7 @@ void update_handler(struct player_t *player)
     }
 }
 
-uint parse_args(struct player_t *player, int argc, char *argv[], char **port_file)
+uint parse_args(int argc, char *argv[], char **port_file)
 {
     uint ret = 0;
 
@@ -296,6 +309,10 @@ uint parse_args(struct player_t *player, int argc, char *argv[], char **port_fil
                     print_usage(argc, argv);
                     ret |= ARG_FAILURE;
                     break;
+                }
+                else if(strcmp(arg, "--nocurses") == 0)
+                {
+                    ret |= ARG_NOCURSES;
                 }
                 else if(strcmp(arg, "-v") == 0 ||
                         strcmp(arg, "--verbose") == 0)
@@ -351,7 +368,7 @@ void fail(const char *fmt, ...)
     exit(EXIT_FAILURE);
 }
 
-int curses_printf(const char *fmt, ...)
+static int curses_printf(const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
@@ -367,33 +384,7 @@ int curses_printf(const char *fmt, ...)
 
 int (*output)(const char*, ...) = printf;
 
-void curses_init(void)
-{
-    initscr();
-    echo();
-    nocbreak();
-    nl();
-    scrollok(stdscr, true);
-    output = curses_printf;
-
-    if(has_colors())
-    {
-        have_color = true;
-        start_color();
-        attron(A_BOLD);
-        init_color(COLOR_WHITE, 1000, 1000, 1000);
-        init_pair(0, COLOR_WHITE, COLOR_BLACK);
-        init_pair(1, COLOR_RED, COLOR_BLACK);
-        init_pair(2, COLOR_GREEN, COLOR_BLACK);
-        use_color(COL_NORM);
-    }
-    else
-    {
-        have_color = false;
-    }
-}
-
-void horiz_line(void)
+void horiz_line_curses(void)
 {
     for(int i = 0; i < getmaxx(stdscr); ++i)
     {
@@ -401,7 +392,15 @@ void horiz_line(void)
     }
 }
 
-void heading(const char *fmt, ...)
+void horiz_line_nocurses(void)
+{
+    for(int i = 0; i < 80; ++i)
+        output("=");
+}
+
+void (*horiz_line)(void) = horiz_line_nocurses;
+
+void heading_curses(const char *fmt, ...)
 {
     char text[128];
     va_list ap;
@@ -424,6 +423,31 @@ void heading(const char *fmt, ...)
         output("=");
 }
 
+void heading_nocurses(const char *fmt, ...)
+{
+    char text[128];
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(text, sizeof(text), fmt, ap);
+    va_end(ap);
+
+    int len = strlen(text) / 2;
+    int beg_x = 40 - len;
+    int d = 0;
+    if(strlen(text) & 1)
+        d++;
+
+    for(int i = 0; i < beg_x - 1; ++i)
+        output("=");
+    output(" ");
+    output(text);
+    output(" ");
+    for(int i = 0; i < 40 - len - 1 - d; ++i)
+        output("=");
+}
+
+void (*heading)(const char*, ...) = heading_nocurses;
+
 bool have_color = false;
 
 void use_color(int col)
@@ -439,5 +463,34 @@ void stop_color(int col)
     if(have_color)
     {
         attroff(COLOR_PAIR(col));
+    }
+}
+
+void curses_init(void)
+{
+    initscr();
+    echo();
+    nocbreak();
+    nl();
+    scrollok(stdscr, true);
+    output = curses_printf;
+    read_string = read_string_curses;
+    horiz_line = horiz_line_curses;
+    heading = heading_curses;
+
+    if(has_colors())
+    {
+        have_color = true;
+        start_color();
+        attron(A_BOLD);
+        init_color(COLOR_WHITE, 1000, 1000, 1000);
+        init_pair(0, COLOR_WHITE, COLOR_BLACK);
+        init_pair(1, COLOR_RED, COLOR_BLACK);
+        init_pair(2, COLOR_GREEN, COLOR_BLACK);
+        use_color(COL_NORM);
+    }
+    else
+    {
+        have_color = false;
     }
 }

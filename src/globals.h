@@ -22,6 +22,7 @@
 #define ARG_LOADED (1<<0)
 #define ARG_FAILURE (1<<1)
 #define ARG_VERBOSE (1<<2)
+#define ARG_NOCURSES (1<<3)
 
 /* don't change this, it will corrupt existing saves */
 #define EPOCH_YEAR 2000
@@ -92,12 +93,12 @@ extern bool have_color;
 void do_menu(struct player_t*, const struct command_t*, uint len, const char *prompt);
 bool get_stock_info(char *sym, struct money_t*, char **name);
 char *csv_read(char**);
-char *read_string(void);
+char *(*read_string)(void);
 char *read_ticker(void);
 int compare_stocks(const void*, const void*);
 void fail(const char*, ...);;
 struct stock_t *find_stock(struct player_t*, char*);
-uint parse_args(struct player_t*, int argc, char *argv[], char**);
+uint parse_args(int argc, char *argv[], char**);
 uint16_t to_be16(uint16_t);
 uint16_t to_sys16(uint16_t);
 uint32_t to_be32(uint32_t);
@@ -109,14 +110,16 @@ void add_hist(struct stock_t*, enum history_action, ullong count);
 void all_lower(char*);
 void all_upper(char*);
 void cleanup(void);
+void curses_init(void);
 void load_portfolio(struct player_t*, const char*);
 void print_history(struct stock_t*);
 void print_usage(int argc, char *argv[]);
 void print_version(void);
 void sig_handler(int);
 extern int (*output)(const char*, ...);
-void heading(const char *text, ...);
-void horiz_line(void);
+extern void (*heading)(const char *text, ...);
+extern void (*horiz_line)(void);
+
 #define COL_NORM 0
 #define COL_RED 1
 #define COL_GREEN 2
