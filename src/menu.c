@@ -26,6 +26,15 @@ void do_menu(struct player_t *player, const struct command_t *commands, uint len
         }
     }
 
+    /* look for a number and see if it corresponds to a valid command */
+    ulong n = strtol(cmdbuf, NULL, 10);
+    if(0 < n && n <= len)
+    {
+        /* in range, execute */
+        best_command = n - 1;
+        goto exec_cmd;
+    }
+
     /* now look for a partial match */
     for(uint i = 0; i < len; ++i)
     {
@@ -65,6 +74,10 @@ exec_cmd:
     {
         commands[best_command].handler(player);
         output("\n");
+    }
+    else
+    {
+        output("Unrecognized command: '%s'\n", cmdbuf);
     }
 
     free(cmdbuf);
