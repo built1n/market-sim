@@ -75,7 +75,7 @@ bool get_stock_info(char *symbol, struct money_t *price, char **name_ret)
 
     if(res != CURLE_OK || buf.data[0] != '"')
     {
-        fail("Failed to query information for '%s'.\n", symbol);
+        fail("Failed to query information for '%s'.", symbol);
     }
 
     /* null-terminate buffer */
@@ -121,7 +121,7 @@ static void detect_endianness(void)
         endianness = LITTLE;
     else
     {
-        fail("failed to detect system endianness");
+        fail("Failed to detect system endianness.");
     }
 }
 
