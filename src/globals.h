@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include <ctype.h>
+#include <errno.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <stdint.h>

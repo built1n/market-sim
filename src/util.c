@@ -75,8 +75,7 @@ bool get_stock_info(char *symbol, struct money_t *price, char **name_ret)
 
     if(res != CURLE_OK || buf.data[0] != '"')
     {
-        output("Failed querying information for '%s'.\n", symbol);
-        return false;
+        fail("Failed to query information for '%s'.\n", symbol);
     }
 
     /* null-terminate buffer */
@@ -328,6 +327,11 @@ uint parse_args(int argc, char *argv[], char **port_file)
                 else if(strcmp(arg, "--") == 0)
                 {
                     break;
+                }
+                else
+                {
+                    output("Unrecognized option '%s'\nTry %s --help for more information.\n", arg, argv[0]);
+                    ret |= ARG_FAILURE;
                 }
             }
             else
