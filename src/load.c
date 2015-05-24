@@ -6,7 +6,7 @@ static uint32_t cksum;
 
 #define ADD_CKSUM(x) (cksum += (x*x) + 1)
 
-#define FAIL() fail("Failed to read from file.")
+#define FAIL() fail("Failed to load save: Unexpected end-of-file")
 
 uint64_t read_be64(FILE *f)
 {
@@ -122,7 +122,7 @@ void load_portfolio(struct player_t *player, const char *filename)
         char *sym = malloc(symlen + 1);
         if(ck_read(sym, symlen + 1, 1, f) != 1)
         {
-            fail("Save is corrupted (symbol too short).");
+            fail("Failed to load save: Unexpected end-of-file");
         }
 
         stock->symbol = sym;
@@ -166,7 +166,7 @@ void load_portfolio(struct player_t *player, const char *filename)
 
         if(ck != cksum)
         {
-            fail("Bad checksum, file is corrupt.\nCalculated: %d File: %d", ck, cksum);
+            fail("Failed to load save: Bad checksum", ck, cksum);
         }
 
         int junk = fgetc(f);
