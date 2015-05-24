@@ -95,9 +95,14 @@ void load_portfolio(struct player_t *player, const char *filename)
     FILE *f = fopen(filename, "rb");
 
     char magic[MAGIC_LEN];
-    if(!f || ck_read(magic, 1, sizeof(magic), f) != 6 || memcmp(magic, SAVE_MAGIC, sizeof(magic)) != 0)
+    if(!f)
     {
-        fail("Failed to load save.");
+        fail("Failed to load save: %s", strerror(errno));
+    }
+
+    if(ck_read(magic, 1, sizeof(magic), f) != 6 || memcmp(magic, SAVE_MAGIC, sizeof(magic)) != 0)
+    {
+        fail("Failed to load save: Invalid file signature");
     }
 
     player->cash.cents = read_be64(f);
