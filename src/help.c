@@ -5,7 +5,7 @@ void print_usage(int argc, char *argv[])
     assert(argc > 1);
 
     output("Usage: %s [OPTION] [PORTFOLIO]\n", argv[0]);
-    output("Runs a interactive trading session with PORTFOLIO or create a new portfolio.\n\n");
+    output("Runs an interactive trading session with PORTFOLIO or create a new portfolio.\n\n");
 
     output("Options:\n");
     output("     --batch\tEnables batch operation, taking commands from standard input\n");
