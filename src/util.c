@@ -531,13 +531,9 @@ void curses_init(void)
     }
 }
 
-int dummy_output(const char* f, ...)
-{
-    (void) f;
-    return 0;
-}
+bool batch_mode = false;
 
 void batch_init(void)
 {
-    output = dummy_output;
+    batch_mode = true;
 }

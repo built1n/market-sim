@@ -72,6 +72,8 @@ exec_cmd:
 
     if(best_command >= 0)
     {
+        if(batch_mode)
+            output("\n");
         commands[best_command].handler(player);
         output("\n");
     }
