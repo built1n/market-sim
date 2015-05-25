@@ -241,7 +241,9 @@ static char *read_string_curses(void)
             ret[len - 1] = '\0';
             ret[len - 2] = c;
         }
-    } while(c != '\n');
+        output("%d\n", c);
+        sleep(1);
+    } while(c != '\n' && c != ERR);
 
     return ret;
 }
@@ -254,6 +256,12 @@ static char *read_string_nocurses(void)
     len = getline(&ret, &len, stdin);
     if(len)
         ret[len - 1] = '\0';
+
+    if(len == (size_t) -1)
+    {
+        free(ret);
+        fail("Encountered end-of-file.");
+    }
     return ret;
 }
 
