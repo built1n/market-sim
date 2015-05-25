@@ -1,5 +1,7 @@
 #include "globals.h"
 
+bool restricted = false;
+
 /*** utility functions ***/
 
 void quit_handler(struct player_t *player)
@@ -20,8 +22,11 @@ int main(int argc, char *argv[])
 
     uint args_status = parse_args(argc, argv, save_file_p);
 
-    if(!(args_status & ARG_NOCURSES))
+    if(!(args_status & ARG_NOCURSES) && !(args_status & ARG_BATCHMODE))
         curses_init();
+
+    if(args_status & ARG_BATCHMODE)
+        batch_init();
 
     atexit(cleanup);
 
@@ -35,6 +40,9 @@ int main(int argc, char *argv[])
 
     if(args_status & ARG_FAILURE)
         return EXIT_FAILURE;
+
+    if(args_status & ARG_RESTRICTED)
+        restricted = true;
 
     if(args_status & ARG_LOADED)
         load_portfolio(player, save_file);

@@ -302,8 +302,12 @@ uint parse_args(int argc, char *argv[], char **port_file)
         {
             if(arg[0] == '-')
             {
-                if(strcmp(arg, "--help") == 0 ||
-                   strcmp(arg, "-h")     == 0)
+                if(strcmp(arg, "--batch") == 0)
+                {
+                    ret |= ARG_BATCHMODE;
+                }
+                else if(strcmp(arg, "--help") == 0 ||
+                        strcmp(arg, "-h")     == 0)
                 {
                     print_usage(argc, argv);
                     ret |= ARG_FAILURE;
@@ -312,6 +316,11 @@ uint parse_args(int argc, char *argv[], char **port_file)
                 else if(strcmp(arg, "--nocurses") == 0)
                 {
                     ret |= ARG_NOCURSES;
+                }
+                else if(strcmp(arg, "-r") == 0 ||
+                        strcmp(arg, "--restrict") == 0)
+                {
+                    ret |= ARG_RESTRICTED;
                 }
                 else if(strcmp(arg, "-v") == 0 ||
                         strcmp(arg, "--verbose") == 0)
@@ -330,7 +339,8 @@ uint parse_args(int argc, char *argv[], char **port_file)
                 }
                 else
                 {
-                    output("Unrecognized option '%s'\nTry %s --help for more information.\n", arg, argv[0]);
+                    output("Unrecognized option '%s'\n", arg, argv[0]);
+                    print_usage(argc, argv);
                     ret |= ARG_FAILURE;
                 }
             }
@@ -504,4 +514,15 @@ void curses_init(void)
     {
         have_color = false;
     }
+}
+
+int dummy_output(const char* f, ...)
+{
+    (void) f;
+    return 0;
+}
+
+void batch_init(void)
+{
+    output = dummy_output;
 }

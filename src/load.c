@@ -179,6 +179,11 @@ void load_portfolio(struct player_t *player, const char *filename)
 
 void load_handler(struct player_t *player)
 {
+    if(restricted)
+    {
+        output("Forbidden.\n");
+        return;
+    }
     output("Enter the file to load portfolio from: ");
     char *filename = read_string();
 
