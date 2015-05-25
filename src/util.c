@@ -417,6 +417,7 @@ void horiz_line_nocurses(void)
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 
+    output("printing heading %d chars long", w.ws_col);
     /* dirty hack for noninteractive mode */
     if(!w.ws_col)
         w.ws_col = 80;
