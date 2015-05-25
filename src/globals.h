@@ -98,6 +98,7 @@ extern bool have_color;
 /* restricted mode disables things that would be considered "dangerous" when
    used in a web-facing script such as interactive loading/saving */
 extern bool restricted;
+extern bool batch_mode;
 
 #define COL_NORM 0
 #define COL_RED 1
