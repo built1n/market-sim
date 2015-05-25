@@ -231,7 +231,7 @@ static char *read_string_curses(void)
 
     ret[0] = '\0';
 
-    char c;
+    int c;
     do {
         c = getch();
         if(c != '\b' && c != '\n')
@@ -241,8 +241,6 @@ static char *read_string_curses(void)
             ret[len - 1] = '\0';
             ret[len - 2] = c;
         }
-        output("%d\n", c);
-        sleep(1);
     } while(c != '\n' && c != ERR);
 
     return ret;
