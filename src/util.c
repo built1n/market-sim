@@ -457,6 +457,8 @@ void heading_nocurses(const char *fmt, ...)
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 
+    output("width: %d\n", w.ws_col);
+
     int len = strlen(text) / 2;
     int beg_x = w.ws_col / 2 - len;
     int d = 0;
