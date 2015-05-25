@@ -5,11 +5,13 @@ void print_usage(int argc, char *argv[])
     assert(argc > 1);
 
     output("Usage: %s [OPTION] [PORTFOLIO]\n", argv[0]);
-    output("Runs a simulated trading session with PORTFOLIO (creating a new one by default).\n\n");
+    output("Runs a interactive trading session with PORTFOLIO or create a new portfolio.\n\n");
 
     output("Options:\n");
+    output("     --batch\tEnables batch operation, taking commands from standard input\n");
     output(" -h, --help\tShow this help and exit\n");
     output("     --nocurses\tOperate without curses\n");
+    output(" -r, --restrict\tOperate in restricted mode, suitable for use as a CGI program\n");
     output(" -v, --verbose\tEnable verbose operation\n");
     output("     --version\tOutput version information and exit\n");
 }

@@ -15,7 +15,7 @@
 #include <unistd.h>
 
 #include <curl/curl.h>
-#include <ncurses.h>
+#include <curses.h>
 
 #define ARRAYLEN(x) (sizeof(x) / sizeof(x[0]))
 
@@ -26,6 +26,8 @@
 #define ARG_FAILURE (1<<1)
 #define ARG_VERBOSE (1<<2)
 #define ARG_NOCURSES (1<<3)
+#define ARG_BATCHMODE (1<<4)
+#define ARG_RESTRICTED (1<<5)
 
 /* don't change this, it will corrupt existing saves */
 #define EPOCH_YEAR 2000
@@ -93,13 +95,22 @@ struct command_t {
 
 extern bool have_color;
 
-void do_menu(struct player_t*, const struct command_t*, uint, const char*);
+/* restricted mode disables things that would be considered "dangerous" when
+   used in a web-facing script such as interactive loading/saving */
+extern bool restricted;
+
+#define COL_NORM 0
+#define COL_RED 1
+#define COL_GREEN 2
+
 bool get_stock_info(char *sym, struct money_t*, char **name);
-char *csv_read(char**);
 char *(*read_string)(void);
+char *csv_read(char**);
 char *read_ticker(void);
+extern int (*output)(const char*, ...);
+extern void (*heading)(const char *text, ...);
+extern void (*horiz_line)(void);
 int compare_stocks(const void*, const void*);
-void fail(const char*, ...);;
 struct stock_t *find_stock(struct player_t*, char*);
 uint parse_args(int argc, char *argv[], char**);
 uint16_t to_be16(uint16_t);
@@ -112,20 +123,16 @@ ullong read_int(void);
 void add_hist(struct stock_t*, enum history_action, ullong count);
 void all_lower(char*);
 void all_upper(char*);
+void batch_init(void);
 void cleanup(void);
 void curses_init(void);
+void do_menu(struct player_t*, const struct command_t*, uint, const char*);
+void fail(const char*, ...);;
 void load_portfolio(struct player_t*, const char*);
 void print_history(struct stock_t*);
 void print_usage(int argc, char *argv[]);
 void print_version(void);
 void sig_handler(int);
-extern int (*output)(const char*, ...);
-extern void (*heading)(const char *text, ...);
-extern void (*horiz_line)(void);
-
-#define COL_NORM 0
-#define COL_RED 1
-#define COL_GREEN 2
 
 void use_color(int);
 void stop_color(int);
