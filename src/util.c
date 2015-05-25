@@ -415,12 +415,8 @@ void horiz_line_curses(void)
 void horiz_line_nocurses(void)
 {
     struct winsize w;
-    w.ws_col = 0;
-    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 
-    output("printing heading %d chars long", w.ws_col);
-    /* dirty hack for noninteractive mode */
-    if(!w.ws_col)
+    if(ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) < 0)
         w.ws_col = 80;
 
     for(int i = 0; i < w.ws_col; ++i)
@@ -462,11 +458,9 @@ void heading_nocurses(const char *fmt, ...)
     va_end(ap);
 
     struct winsize w;
-    w.ws_col = 0;
-    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 
     /* dirty hack for noninteractive mode */
-    if(!w.ws_col)
+    if(ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) < 0)
         w.ws_col = 80;
 
     int len = strlen(text) / 2;
