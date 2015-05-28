@@ -44,6 +44,9 @@ int main(int argc, char *argv[])
     if(args_status & ARG_RESTRICTED)
         restricted = true;
 
+    if(args_status & ARG_HTML)
+        html_out = true;
+
     if(args_status & ARG_LOADED)
         load_portfolio(player, save_file);
     else

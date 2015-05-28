@@ -10,6 +10,7 @@ void print_usage(int argc, char *argv[])
     output("Options:\n");
     output("     --batch\tEnables batch operation, taking commands from standard input\n");
     output(" -h, --help\tShow this help and exit\n");
+    output("     --html\tUse HTML formatting for output (implies --nocurses)\n");
     output("     --nocurses\tOperate without curses\n");
     output(" -r, --restrict\tOperate in restricted mode, suitable for use as a CGI program\n");
     output(" -v, --verbose\tEnable verbose operation\n");
