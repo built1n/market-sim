@@ -2,7 +2,7 @@
 
 void print_usage(int argc, char *argv[])
 {
-    assert(argc > 1);
+    assert(argc > 0);
 
     output("Usage: %s [OPTION] [PORTFOLIO]\n", argv[0]);
     output("Runs an interactive trading session with PORTFOLIO or create a new portfolio.\n\n");

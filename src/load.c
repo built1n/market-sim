@@ -181,7 +181,7 @@ void load_handler(struct player_t *player)
 {
     if(restricted)
     {
-        output("Forbidden.\n");
+        output("Loading forbidden in restricted mode.\n");
         return;
     }
     output("Enter the file to load portfolio from: ");
