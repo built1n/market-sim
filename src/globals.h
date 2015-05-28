@@ -28,6 +28,7 @@
 #define ARG_NOCURSES (1<<3)
 #define ARG_BATCHMODE (1<<4)
 #define ARG_RESTRICTED (1<<5)
+#define ARG_HTML (1<<6)
 
 /* don't change this, it will corrupt existing saves */
 #define EPOCH_YEAR 2000
@@ -94,6 +95,7 @@ struct command_t {
 /*** prototypes ***/
 
 extern bool have_color;
+extern bool html_out;
 
 /* restricted mode disables things that would be considered "dangerous" when
    used in a web-facing script such as interactive loading/saving */

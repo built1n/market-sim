@@ -319,6 +319,11 @@ uint parse_args(int argc, char *argv[], char **port_file)
                     ret |= ARG_FAILURE;
                     break;
                 }
+                else if(strcmp(arg, "--html") == 0)
+                {
+                    ret |= ARG_HTML;
+                    ret |= ARG_NOCURSES;
+                }
                 else if(strcmp(arg, "--nocurses") == 0)
                 {
                     ret |= ARG_NOCURSES;
@@ -483,11 +488,34 @@ void (*heading)(const char*, ...) = heading_nocurses;
 
 bool have_color = false;
 
+bool html_out = false;
+
 void use_color(int col)
 {
     if(have_color)
     {
         attron(COLOR_PAIR(col));
+    }
+    else if(html_out)
+    {
+        uchar r, g, b;
+        switch(col)
+        {
+        case COL_NORM:
+            r = g = b = 0;
+            break;
+        case COL_RED:
+            r = 255;
+            g = b = 0;
+            break;
+        case COL_GREEN:
+            r = b = 0;
+            g = 255;
+            break;
+        default:
+            assert(0);
+        }
+        output("<font color=\"#%02x%02x%02x\">", r, g, b);
     }
 }
 
@@ -496,6 +524,10 @@ void stop_color(int col)
     if(have_color)
     {
         attroff(COLOR_PAIR(col));
+    }
+    else if(html_out)
+    {
+        output("</font>");
     }
 }
 
