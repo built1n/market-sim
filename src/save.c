@@ -67,7 +67,7 @@ void save_handler(struct player_t *player)
 {
     if(restricted)
     {
-        output("Forbidden.\n");
+        output("Saving forbidden in restricted mode.\n");
         return;
     }
     output("Enter the file to save your portfolio in: ");
