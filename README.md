@@ -3,11 +3,11 @@ Market-Sim
 
 A retro stock-trading game utilizing live data.
 
-Made mostly for fun, there's a (very slow) CGI-based demo version available [here](http://fwei.ml/market-sim.html).
+Made mostly for fun, there's a very slow, CGI-based demo version available [here](http://fwei.ml/market-sim.html).
 
 ## About
 
-I got bored the other day and whipped this up over the course of about a day.
+Made with boredom and a cheaply bought keyboard.
 
 ## Contributions
 
