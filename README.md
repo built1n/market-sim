@@ -11,7 +11,7 @@ Made with boredom and a cheaply bought keyboard.
 
 ## Contributions
 
-Contributions are always welcome, see the [TODO list](https://github.com/theunamedguy/market-sim/blob/master/docs/TODO) for some things to do.
+Contributions are always welcome, see the [TODO list](https://github.com/theunamedguy/market-sim/blob/master/docs/TODO-LIST.md) for some things to do.
 
 ## License
 
