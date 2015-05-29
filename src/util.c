@@ -6,7 +6,9 @@
 void cleanup(void)
 {
     curl_global_cleanup();
+#ifndef WITHOUT_CURSES
     endwin();
+#endif
 }
 
 void sig_handler(int sig)
@@ -75,7 +77,7 @@ bool get_stock_info(char *symbol, struct money_t *price, char **name_ret)
 
     if(res != CURLE_OK || buf.data[0] != '"')
     {
-        fail("Failed to query information for '%s'.", symbol);
+        return false;
     }
 
     /* null-terminate buffer */
@@ -224,6 +226,7 @@ void print_handler(struct player_t *player)
     output("Total capital: $%llu.%02llu\n", total / 100, total % 100);
 }
 
+#ifndef WITHOUT_CURSES
 static char *read_string_curses(void)
 {
     char *ret = malloc(1);
@@ -245,6 +248,7 @@ static char *read_string_curses(void)
 
     return ret;
 }
+#endif
 
 static char *read_string_nocurses(void)
 {
@@ -350,9 +354,7 @@ uint parse_args(int argc, char *argv[], char **port_file)
                 }
                 else
                 {
-                    output("Unrecognized option '%s'\n", arg, argv[0]);
-                    print_usage(argc, argv);
-                    ret |= ARG_FAILURE;
+                    fail("Unrecognized option '%s'\nUse --help for usage information.", arg, argv[0]);
                 }
             }
             else
@@ -388,11 +390,12 @@ void fail(const char *fmt, ...)
     va_end(ap);
     cleanup();
 
-    fprintf(stdout, "FATAL: %s\n", buf);
+    fprintf(stderr, "FATAL: %s\n", buf);
 
     exit(EXIT_FAILURE);
 }
 
+#ifndef WITHOUT_CURSES
 static int curses_printf(const char *fmt, ...)
 {
     va_list ap;
@@ -406,9 +409,11 @@ static int curses_printf(const char *fmt, ...)
 
     return ret;
 }
+#endif
 
 int (*output)(const char*, ...) = printf;
 
+#ifndef WITHOUT_CURSES
 void horiz_line_curses(void)
 {
     for(int i = 0; i < getmaxx(stdscr); ++i)
@@ -416,6 +421,7 @@ void horiz_line_curses(void)
         output("=");
     }
 }
+#endif
 
 void horiz_line_nocurses(void)
 {
@@ -431,6 +437,7 @@ void horiz_line_nocurses(void)
 
 void (*horiz_line)(void) = horiz_line_nocurses;
 
+#ifndef WITHOUT_CURSES
 void heading_curses(const char *fmt, ...)
 {
     char text[128];
@@ -453,6 +460,7 @@ void heading_curses(const char *fmt, ...)
     for(int i = 0; i < getmaxx(stdscr) - getmaxx(stdscr) / 2 - len - 1 - d; ++i)
         output("=");
 }
+#endif
 
 void heading_nocurses(const char *fmt, ...)
 {
@@ -492,11 +500,14 @@ bool html_out = false;
 
 void use_color(int col)
 {
+#ifndef WITHOUT_CURSES
     if(have_color)
     {
         attron(COLOR_PAIR(col));
     }
-    else if(html_out)
+    else
+#endif
+    if(html_out)
     {
         uchar r, g, b;
         switch(col)
@@ -521,18 +532,23 @@ void use_color(int col)
 
 void stop_color(int col)
 {
+#ifndef WITHOUT_CURSES
     if(have_color)
     {
         attroff(COLOR_PAIR(col));
     }
-    else if(html_out)
+    else
+#endif
+    if(html_out)
     {
+        (void) col;
         output("</font>");
     }
 }
 
 void curses_init(void)
 {
+#ifndef WITHOUT_CURSES
     initscr();
     echo();
     nocbreak();
@@ -558,6 +574,7 @@ void curses_init(void)
     {
         have_color = false;
     }
+#endif
 }
 
 bool batch_mode = false;

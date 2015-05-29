@@ -19,8 +19,13 @@ void print_usage(int argc, char *argv[])
 
 void print_version(void)
 {
-    output("market-sim " PROGRAM_VERSION "\n");
-    output("Built with %s.\n", curl_version());
+    output(PROGRAM_NAME " " PROGRAM_VERSION "\n");
+    output("%s\n", curl_version());
+#ifndef WITHOUT_CURSES
+    output("%s\n", curses_version());
+#else
+    output("Built without curses support.\n");
+#endif
     output("Build date: %s\n", __DATE__);
     output("Copyright (C) 2015 Franklin Wei.\n\n");
     output("License GPLv2: GNU GPL version 2 <http://www.gnu.org/licenses/gpl-2.0.html>\n");

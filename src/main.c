@@ -22,6 +22,9 @@ int main(int argc, char *argv[])
 
     uint args_status = parse_args(argc, argv, save_file_p);
 
+    if(args_status & ARG_FAILURE)
+        return EXIT_FAILURE;
+
     if(!(args_status & ARG_NOCURSES) && !(args_status & ARG_BATCHMODE))
         curses_init();
 
@@ -37,9 +40,6 @@ int main(int argc, char *argv[])
     sigaction(SIGINT, &handler, NULL);
 
     heading("Market Simulator " PROGRAM_VERSION);
-
-    if(args_status & ARG_FAILURE)
-        return EXIT_FAILURE;
 
     if(args_status & ARG_RESTRICTED)
         restricted = true;

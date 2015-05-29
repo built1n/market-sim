@@ -1,23 +1,30 @@
 #ifndef _MARKET_SIM_H_
 #define _MARKET_SIM_H_
 
+//#define WITHOUT_CURSES
+
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
 #include <signal.h>
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdarg.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
 #include <curl/curl.h>
+
+#ifndef WITHOUT_CURSES
 #include <curses.h>
+#endif
 
 #define ARRAYLEN(x) (sizeof(x) / sizeof(x[0]))
+
+#define PROGRAM_NAME "market-sim"
 
 /* VERSION_INFO is supplied by the compiler */
 #define PROGRAM_VERSION "v0.3 (" VERSION_INFO ")"
