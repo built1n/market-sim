@@ -206,10 +206,30 @@ void print_handler(struct player_t *player)
             struct stock_t *stock = player->portfolio + i;
             if(stock->count)
             {
+                struct history_item *last_buy = NULL;
+                struct history_item *iter = stock->history;
+                while(iter)
+                {
+                    if(iter->action == BUY)
+                        last_buy = iter;
+                    iter = iter->next;
+                }
+
                 ullong total_value = stock->count * stock->current_price.cents;
-                output("%6s %40s %5llu  * $%5llu.%02llu = $%6llu.%02llu\n",
-                       stock->symbol, stock->fullname, stock->count, stock->current_price.cents / 100, stock->current_price.cents % 100,
-                       total_value / 100, total_value % 100);
+                output("%6s %40s %5llu  * $",
+                       stock->symbol, stock->fullname, stock->count);
+
+                int col = COL_NORM;
+                if(last_buy->price.cents < stock->current_price.cents)
+                    col = COL_GREEN;
+                else if(last_buy->price.cents > stock->current_price.cents)
+                    col = COL_RED;
+
+                use_color(col);
+                output("%5llu.%02llu", stock->current_price.cents / 100, stock->current_price.cents % 100);
+                stop_color(col);
+
+                output(" = $%6llu.%02llu\n", total_value / 100, total_value % 100);
 
                 portfolio_value += stock->current_price.cents * stock->count;
             }
