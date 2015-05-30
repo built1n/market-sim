@@ -43,6 +43,9 @@
 #define SAVE_MAGIC "PORTv3"
 #define MAGIC_LEN 6
 
+#define BOLD_THRESHOLD 50
+#define ABS(x) (((x)<0)?-(x):(x))
+
 typedef unsigned long long ullong;
 typedef unsigned long ulong;
 typedef unsigned int uint;
@@ -143,6 +146,8 @@ void print_history(struct stock_t*);
 void print_usage(int argc, char *argv[]);
 void print_version(void);
 void sig_handler(int);
+void use_bold(void);
+void stop_bold(void);
 
 void use_color(int);
 void stop_color(int);
