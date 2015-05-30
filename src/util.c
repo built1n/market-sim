@@ -225,9 +225,15 @@ void print_handler(struct player_t *player)
                 else if(last_buy->price.cents > stock->current_price.cents)
                     col = COL_RED;
 
+                if(ABS((signed)last_buy->price.cents - (signed)stock->current_price.cents) >= BOLD_THRESHOLD)
+                    use_bold();
+
                 use_color(col);
                 output("%5llu.%02llu", stock->current_price.cents / 100, stock->current_price.cents % 100);
                 stop_color(col);
+
+                if(ABS((signed)last_buy->price.cents - (signed)stock->current_price.cents) >= BOLD_THRESHOLD)
+                    stop_bold();
 
                 output(" = $%6llu.%02llu\n", total_value / 100, total_value % 100);
 
@@ -602,4 +608,21 @@ bool batch_mode = false;
 void batch_init(void)
 {
     batch_mode = true;
+}
+
+void use_bold(void)
+{
+    /* curses mode always has A_BOLD set, so this only applies to HTML mode */
+    if(html_out)
+    {
+        output("<b>");
+    }
+}
+
+void stop_bold(void)
+{
+    if(html_out)
+    {
+        output("</b>");
+    }
 }
