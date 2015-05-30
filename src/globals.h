@@ -43,7 +43,7 @@
 #define SAVE_MAGIC "PORTv3"
 #define MAGIC_LEN 6
 
-#define BOLD_THRESHOLD 50
+#define BOLD_THRESHOLD 25
 #define ABS(x) (((x)<0)?-(x):(x))
 
 typedef unsigned long long ullong;
