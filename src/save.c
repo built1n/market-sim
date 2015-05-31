@@ -63,21 +63,11 @@ size_t ck_write(const char *buf, size_t sz, size_t nmemb, FILE *f)
     return nmemb;
 }
 
-void save_handler(struct player_t *player)
+void save_portfolio(struct player_t *player, const char *filename)
 {
-    if(restricted)
-    {
-        output("Saving forbidden in restricted mode.\n");
-        return;
-    }
-    output("Enter the file to save your portfolio in: ");
-
-    char *filename = read_string();
-
     output("Writing data...\n");
-    FILE *f = fopen(filename, "wb");
 
-    free(filename);
+    FILE *f = fopen(filename, "wb");
 
     cksum = 0;
 
@@ -120,5 +110,24 @@ void save_handler(struct player_t *player)
 
     fclose(f);
 
+    if(player->filename && player->filename != filename)
+        free(player->filename);
+
+    player->filename = (char*)filename;
+
     output("Done saving.\n");
+}
+
+void save_handler(struct player_t *player)
+{
+    if(restricted)
+    {
+        output("Saving forbidden in restricted mode.\n");
+        return;
+    }
+    output("Enter the file to save your portfolio in: ");
+
+    char *filename = read_string();
+
+    save_portfolio(player, filename);
 }

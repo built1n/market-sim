@@ -175,6 +175,11 @@ void load_portfolio(struct player_t *player, const char *filename)
     } while (!feof(f) && !ferror(f));
 
     update_handler(player);
+
+    if(player->filename && player->filename != filename)
+        free(player->filename);
+
+    player->filename = (char*)filename;
 }
 
 void load_handler(struct player_t *player)
@@ -188,6 +193,4 @@ void load_handler(struct player_t *player)
     char *filename = read_string();
 
     load_portfolio(player, filename);
-
-    free(filename);
 }

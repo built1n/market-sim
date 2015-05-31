@@ -93,7 +93,9 @@ struct player_t {
     struct money_t cash;
     uint portfolio_len;
     struct stock_t *portfolio;
+
     bool need_to_free_portfolio;
+    char *filename; /* filename last loaded or written to, used for quicksave */
 };
 
 struct command_t {
@@ -142,6 +144,7 @@ void curses_init(void);
 void do_menu(struct player_t*, const struct command_t*, uint, const char*);
 void fail(const char*, ...);;
 void load_portfolio(struct player_t*, const char*);
+void save_portfolio(struct player_t*, const char*);
 void print_history(struct stock_t*);
 void print_usage(int argc, char *argv[]);
 void print_version(void);

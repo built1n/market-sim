@@ -10,6 +10,25 @@ void quit_handler(struct player_t *player)
     exit(EXIT_SUCCESS);
 }
 
+void quicksave_handler(struct player_t *player)
+{
+    if(restricted)
+    {
+        output("Saving forbidden in restricted mode.\n");
+        return;
+    }
+
+    if(!player->filename)
+    {
+        save_handler(player);
+        return;
+    }
+
+    output("Saving to '%s'.\n", player->filename);
+
+    save_portfolio(player, player->filename);
+}
+
 int main(int argc, char *argv[])
 {
     curl_global_init(CURL_GLOBAL_DEFAULT);
@@ -48,7 +67,13 @@ int main(int argc, char *argv[])
         html_out = true;
 
     if(args_status & ARG_LOADED)
-        load_portfolio(player, save_file);
+    {
+        /* save_file must be allocated with malloc(), make it so */
+        char *filename = malloc(strlen(save_file) + 1);
+        strcpy(filename, save_file);
+
+        load_portfolio(player, filename);
+    }
     else
         player->cash.cents = 1000 * 100;
 
@@ -67,7 +92,8 @@ int main(int argc, char *argv[])
             { "Stock [i]nfo", "info", info_handler },
             { "[L]oad portfolio from disk", "load", load_handler },
             { "[W]rite portfolio to disk", "write", save_handler },
-            { "[Q]uit", "quit", quit_handler },
+            { "[Q]uick save", "quicksave", quicksave_handler },
+            { "[E]xit", "exit", quit_handler },
         };
 
         do_menu(player, commands, ARRAYLEN(commands),

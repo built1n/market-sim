@@ -6,7 +6,7 @@ OBJ := $(SRC:.c=.o)
 
 GIT_VERSION := $(shell git describe --abbrev=8 --always --dirty)
 
-CFLAGS = -Isrc/ -O2 -g -Wall -Wextra -std=gnu99 -DVERSION_INFO=\"$(GIT_VERSION)\"
+CFLAGS = -Isrc/ -O2 -g -Wall -Wextra -std=gnu99 -DVERSION_INFO=\"$(GIT_VERSION)\" -fsanitize=address
 
 PREFIX = /usr
 BINDIR = $(PREFIX)/bin
