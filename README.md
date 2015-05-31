@@ -48,4 +48,4 @@ Contributions are always welcome, see the [TODO list](https://github.com/theunam
 
 ## License
 
-Market-Sim is licensed under the [GNU General Public License, version 2](http://www.gnu.org/licenses/gpl-2.0.html).
+Market-Sim is licensed under the [GNU General Public License, version 2](http://www.gnu.org/licenses/gpl-2.0.html) by Franklin Wei.
