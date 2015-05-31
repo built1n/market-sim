@@ -35,8 +35,8 @@ When you first run `market-sim`, an empty portfolio is created and you are given
 4. Confirm the transaction. This will return you to the main prompt.
 5. From here, you probably want to save your porfolio to disk; type `write`.
 6. Enter the name of the file to save to. Careful, there's nothing to keep you from clobbering a file here!
-7. Come back later and trade some more shares!
-8. Profit.
+7. Come back later and trade some more!
+8. Profit!
 
 ## About
 
