@@ -16,11 +16,27 @@ Just run:
 
     make ; sudo make install
 
-This will install the market-sim binary in `/usr/local/bin`.
+This will install the market-sim binary in `/usr/local/bin/`.
 
 ### Building Without Curses Support
 
 Uncomment the `#define WITHOUT_CURSES` line in `src/globals.h`, then build as described above.
+
+## Basic Tutorial
+
+When you first run `market-sim`, an empty portfolio is created and you are given $1000 USD.
+
+1. You probably want to buy some shares now; type `buy`.
+
+    Enter the ticker symbol of the stock you wish to purchase:
+
+2. Input a ticker symbol.
+3. Enter the number of shares you wish to buy.
+4. Confirm the transaction. This will return you to the main prompt.
+5. From here, you probably want to save your porfolio to disk; type `write`.
+6. Enter the name of the file to save to. Careful, there's nothing to keep you from clobbering a file here!
+7. Come back later and trade some more shares!
+8. Profit.
 
 ## About
 
