@@ -28,7 +28,7 @@ When you first run `market-sim`, an empty portfolio is created and you are given
 
 1. You probably want to buy some shares now; type `buy`.
 
-    Enter the ticker symbol of the stock you wish to purchase:
+        Enter the ticker symbol of the stock you wish to purchase:
 
 2. Input a ticker symbol.
 3. Enter the number of shares you wish to buy.
