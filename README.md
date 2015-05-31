@@ -5,6 +5,23 @@ A retro stock-trading game utilizing live data.
 
 Made mostly for fun, there's a very slow, CGI-based demo version available [here](http://fwei.ml/market-sim.html).
 
+## Building
+
+### Prerequisites
+
+ - libcurl
+ - libcurses or equivalent (optional, see below)
+
+Just run:
+
+    make ; sudo make install
+
+This will install the market-sim binary in `/usr/local/bin`.
+
+### Building Without Curses Support
+
+Uncomment the `#define WITHOUT_CURSES` line in `src/globals.h`, then build as described above.
+
 ## About
 
 Made with boredom and a cheaply bought keyboard.
